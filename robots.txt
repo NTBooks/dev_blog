@@ -1,0 +1,6 @@
+# LUMP Depot — allow search engines and other bots
+User-agent: *
+Allow: /
+
+# Sitemap (replace with your live site URL if different)
+Sitemap: https://lumpdepot.pages.dev/sitemap.xml
