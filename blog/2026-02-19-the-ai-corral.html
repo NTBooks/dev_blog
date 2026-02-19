@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The AI Corral — LUMP Depot</title>
+  <meta name="description"
+    content="How to run Google's Antigravity code editor in a Hyper-V VM on Windows so it can't cause havoc. Plus fine-grained git tokens and snapshots.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+  <header class="site-header" role="banner">
+    <div class="site-header-inner">
+      <p class="site-title"><a href="../index.html"><img src="../glyph.png" alt="" class="site-logo" width="32"
+            height="32">LUMP Depot</a></p>
+      <nav class="site-nav" aria-label="Main">
+        <a href="../index.html">Home</a>
+        <a href="../about.html">About</a>
+        <a href="index.html">Blog</a>
+        <a href="../contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <article itemscope itemtype="https://schema.org/BlogPosting">
+      <header class="article-header">
+        <nav aria-label="Breadcrumb">
+          <a href="index.html" class="back-link">← Blog</a>
+        </nav>
+        <h1 class="article-title" itemprop="headline">The AI Corral</h1>
+        <time class="article-date" datetime="2026-02-19" itemprop="datePublished">2026-02-19</time>
+      </header>
+
+
+      <div class="article-body">
+        <p>I've been trying out all the IDEs lately. Cursor, Claude, and the chat-based ones like the plain ChatGPT site
+          and TypingMind. Recently I saw Google handing out pretty generous trials for Google One so you can try
+          Antigravity, their code editor.</p>
+
+        <p>I've used Antigravity before and I know how fast and loose it can play with tools. I decided it really needed
+          to be penned up.</p>
+
+        <p>Here's the gist of how to do that on Windows. You can do something similar with Proxmox, Linux, or whatever
+          you prefer.</p>
+
+        <section aria-labelledby="setup">
+          <h2 id="setup">Set up the VM</h2>
+          <p>Install the Hyper-V feature if you don't have it already. Then create a new VM and run Linux Mint Cinnamon
+            on it. Ubuntu works too if that's your thing.</p>
+          <p>Inside the VM, install Antigravity and set up git. When you give this machine git access, use fine-grained
+            tokens. Restrict them so the token can only write to certain repos or branches. You don't want this thing
+            getting out and causing all kinds of havoc.</p>
+        </section>
+
+        <section aria-labelledby="safety">
+          <h2 id="safety">When it goes sideways</h2>
+          <p>If the assistant goes a little crazy inside the machine and deletes all your files, it's no big deal. You
+            have been keeping snapshots, right? Keep snapshots.</p>
+        </section>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="site-footer-inner">
+      LUMP Depot — Largely Universal Model Prompts. Static site on Cloudflare Pages.
+    </div>
+  </footer>
+</body>
+
+</html>
