@@ -7,11 +7,14 @@
   <title>Welcome Back to 1951: LLMs Are Closer to UNIVAC Than You Think — LUMP Depot</title>
   <meta name="description"
     content="Musings on LLMs, agent skills, MCP servers, and how they're speedrunning early computing—batch systems, tools, and the next layer where reliability improves.">
-  <link rel="canonical" href="https://lumpdepot.pages.dev/blog/2026-02-20-welcome-back-to-1951-llms-are-closer-to-univac-than-you-think.html">
+  <link rel="canonical"
+    href="https://lumpdepot.pages.dev/blog/2026-02-20-welcome-back-to-1951-llms-are-closer-to-univac-than-you-think.html">
   <meta property="og:type" content="article">
   <meta property="og:title" content="Welcome Back to 1951: LLMs Are Closer to UNIVAC Than You Think — LUMP Depot">
-  <meta property="og:description" content="Musings on LLMs, agent skills, MCP servers, and how they're speedrunning early computing—batch systems, tools, and the next layer where reliability improves.">
-  <meta property="og:url" content="https://lumpdepot.pages.dev/blog/2026-02-20-welcome-back-to-1951-llms-are-closer-to-univac-than-you-think.html">
+  <meta property="og:description"
+    content="Musings on LLMs, agent skills, MCP servers, and how they're speedrunning early computing—batch systems, tools, and the next layer where reliability improves.">
+  <meta property="og:url"
+    content="https://lumpdepot.pages.dev/blog/2026-02-20-welcome-back-to-1951-llms-are-closer-to-univac-than-you-think.html">
   <meta property="article:published_time" content="2026-02-20">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Welcome Back to 1951: LLMs Are Closer to UNIVAC Than You Think">
@@ -43,23 +46,33 @@
         <nav aria-label="Breadcrumb">
           <a href="index.html" class="back-link">← Blog</a>
         </nav>
-        <h1 class="article-title" itemprop="headline">Welcome Back to 1951: LLMs Are Closer to UNIVAC Than You Think</h1>
+        <h1 class="article-title" itemprop="headline">Welcome Back to 1951: LLMs Are Closer to UNIVAC Than You Think
+        </h1>
         <time class="article-date" datetime="2026-02-20" itemprop="datePublished">2026-02-20</time>
       </header>
 
 
       <div class="article-body">
-        <p>As I learn more about how agent skills, MCP servers, and LLMs in general are evolving, I'm increasingly reminded of early computing.</p>
+        <p>As I learn more about how agent skills, MCP servers, and LLMs in general are evolving, I'm increasingly
+          reminded of early computing.</p>
 
-        <p>We didn't always have glass OSes and fancy UIs. When we started, it was punch cards, paper tape, and batch jobs. Interactive computing came later. LLMs currently are speedrunning this process, but I think our meatspace brains just can't keep up.</p>
+        <p>We didn't always have glass OSes and fancy UIs. When we started, it was punch cards, paper tape, and batch
+          jobs. Interactive computing came later. LLMs currently are speedrunning this process, but I think our
+          meatspace brains just can't keep up.</p>
 
         <p>Here are my musings as a software developer constantly under threat of being replaced.</p>
 
-        <p>LLMs and chat interfaces are more like old batch systems, which take text input and deliver console output. Early mainframes were often sold as vertically integrated systems, hardware bundled with operating systems and custom business software. They didn't have "apps" the way we think of them now. That abstraction came later.</p>
+        <p>LLMs and chat interfaces are more like old batch systems, which take text input and deliver console output.
+          Early mainframes were often sold as vertically integrated systems, hardware bundled with operating systems and
+          custom business software. They didn't have "apps" the way we think of them now. That abstraction came later.
+        </p>
 
-        <p>By the late 1970s and early PC era, you started to see things like spreadsheets and word processors become standalone software. Memory was measured in kilobytes. It was impressive for its time.</p>
+        <p>By the late 1970s and early PC era, you started to see things like spreadsheets and word processors become
+          standalone software. Memory was measured in kilobytes. It was impressive for its time.</p>
 
-        <p>I've watched LLMs go from glorified autocorrect to a pretty capable junior dev in the last year. The major shift isn't just better next-token prediction. It's that they stopped being purely static text predictors and started interacting with external systems.</p>
+        <p>I've watched LLMs go from glorified autocorrect to a pretty capable junior dev in the last year. The major
+          shift isn't just better next-token prediction. It's that they stopped being purely static text predictors and
+          started interacting with external systems.</p>
 
         <p>Instead of relying entirely on a fixed training set to give you a result, modern systems can:</p>
 
@@ -70,23 +83,37 @@
           <li>Expand their effective context</li>
         </ul>
 
-        <p>That's the real unlock.</p>
+        <p>That's the real trick.</p>
 
-        <p>Now, instead of guessing everything from compressed statistical memory, the model can write small programs, fetch relevant information, load it into its context window, and then reason over it. It's still a probabilistic text generator, but now it can reach beyond its training data at inference time.</p>
+        <p>Now, instead of guessing everything from compressed statistical memory, the model can write small programs,
+          fetch relevant information, load it into its context window, and then reason over it. It's still a
+          probabilistic text generator, but now it can reach beyond its training data at inference time.</p>
 
-        <p>A spell checker on steroids, or rather, a spell checker with plugins. And yes, I'm a human, but I used strong punctuation. Sue me.</p>
+        <p>A spell checker on steroids, or rather, a spell checker with plugins. </p>
 
-        <p>If an MCP server is basically a structured way to expose a computational environment through text commands, it's a lot like telnet in spirit. A text protocol that lets you reach out and make another machine do something. We've had that idea before.</p>
+        <p>If an MCP server is basically a structured way to expose a computational environment through text commands,
+          it's a lot like telnet in spirit. A text protocol that lets you reach out and make another machine do
+          something. We've had that idea before.</p>
 
-        <p>If SKILL.MD is the next evolution, the way I understand it, it's essentially reusable capability definitions that you can program your LLM agent with. They can offer extended capabilities like downloading websites or querying APIs. They can modify output, like replacing every link in a chat with a rickroll.</p>
+        <p>If SKILL.MD is the next evolution, the way I understand it, it's essentially reusable capability definitions
+          that you can program your LLM agent with. They can offer extended capabilities like downloading websites or
+          querying APIs. They can modify output, like replacing every link in a chat with a rickroll.</p>
 
-        <p>If the LLM is the operating system, think early DOS, then the ability to have multiple chats at once feels like multitasking layered on top. Skills, SKILL.MD, become your functions. Prompts become your executables. Tool calls become your system interrupts.</p>
+        <p>If the LLM is the operating system, think early DOS, then the ability to have multiple chats at once feels
+          like multitasking layered on top. Skills, SKILL.MD, become your functions. Prompts become your executables.
+          Tool calls become your system interrupts.</p>
 
-        <p>I don't think the solution is necessarily removing the propensity to hallucinate from these models. Hallucination is a byproduct of probabilistic generation under uncertainty. The real shift is widespread adoption of the idea that these systems don't do everything out of the box, and that installing new skills is like installing apps on your phone.</p>
+        <p>I don't think the solution is necessarily removing the propensity to hallucinate from these models.
+          Hallucination is a byproduct of probabilistic generation under uncertainty. The real shift is widespread
+          adoption of the idea that these systems don't do everything out of the box, and that installing new skills is
+          like installing apps on your phone.</p>
 
-        <p>You'll have a skill made by your bank. PayPal will have a skill. Your internal company wiki will expose one. That's the layer where reliability improves, not by pretending the core model is omniscient, but by giving it structured ways to reach the real world.</p>
+        <p>You'll have a skill made by your bank. PayPal will have a skill. Your internal company wiki will expose one.
+          That's the layer where reliability improves, not by pretending the core model is omniscient, but by giving it
+          structured ways to reach the real world.</p>
 
-        <p>It's a new frontier, and maybe it's okay that the batch processor occasionally confabulates. It keeps it interesting.</p>
+        <p>It's a new frontier, and maybe it's okay that the batch processor occasionally confabulates. It keeps it
+          interesting.</p>
 
         <p>– Nick</p>
       </div>
