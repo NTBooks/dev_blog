@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Incorporating AI Skills Into the Making Process — LUMP Depot</title>
+  <meta name="description"
+    content="Where programmers add value in the LLM skill ecosystem: marshaling AI with well-tested skills, vibe coding, and talking to your tools.">
+  <link rel="canonical"
+    href="https://lumpdepot.pages.dev/blog/2026-02-22-incorporating-ai-skills-into-the-making-process.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Incorporating AI Skills Into the Making Process — LUMP Depot">
+  <meta property="og:description"
+    content="Where programmers add value in the LLM skill ecosystem: marshaling AI with well-tested skills, vibe coding, and talking to your tools.">
+  <meta property="og:url"
+    content="https://lumpdepot.pages.dev/blog/2026-02-22-incorporating-ai-skills-into-the-making-process.html">
+  <meta property="article:published_time" content="2026-02-22">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Incorporating AI Skills Into the Making Process">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+  <header class="site-header" role="banner">
+    <div class="site-header-inner">
+      <p class="site-title"><a href="../index.html"><img src="../glyph.png" alt="" class="site-logo" width="32"
+            height="32">LUMP Depot</a></p>
+      <nav class="site-nav" aria-label="Main">
+        <a href="../index.html">Home</a>
+        <a href="../about.html">About</a>
+        <a href="index.html">Blog</a>
+        <a href="../contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <article itemscope itemtype="https://schema.org/BlogPosting">
+      <header class="article-header">
+        <nav aria-label="Breadcrumb">
+          <a href="index.html" class="back-link">← Blog</a>
+        </nav>
+        <h1 class="article-title" itemprop="headline">Incorporating AI Skills Into the Making Process</h1>
+        <time class="article-date" datetime="2026-02-22" itemprop="datePublished">2026-02-22</time>
+      </header>
+
+      <div class="article-body">
+        <p>I think I found where programmers really add value to the LLM skill ecosystem. A lot of basic tasks can be handled by the LLM's training data. It's able to compose scripts on the fly to accomplish a lot of tasks, especially with small datasets.</p>
+
+        <p>In the real world, datasets aren't always small, consistent, or clean. Exceptions happen.</p>
+
+        <p>Skills let you marshal the AI into doing a specific job by running well-tested code. You have to program the skill like a little utility app. It took me hours to get a TSV-to-SQLite skill working, for instance.</p>
+
+        <p>You'll never one-shot some skills, but using the agent to create your skill outline then prompt-updating it (vibe coding) can result in a robust and repeatable task.</p>
+
+        <p>So what makes a skill different from just downloading a package on npm and running it?</p>
+
+        <p>You can talk to skills. I made one where it turns my questions about a database into SQL statements and runs them, but since it investigates the schema first it makes it very flexible. It seems to work on any DB I throw at it. That's way more flexible than any ORM I've ever used.</p>
+
+        <p>Code that ships is only part of the development process. We're constantly examining artifacts to fix bugs or writing one-off utility functions to transform data. Skills are amazing for this because they can be shared and used by just about any model.</p>
+
+        <p>I'm starting to get it.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="site-footer-inner">
+      LUMP Depot — Largely Universal Model Prompts. Static site on Cloudflare Pages.
+    </div>
+  </footer>
+</body>
+
+</html>
