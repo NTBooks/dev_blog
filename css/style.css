@@ -231,10 +231,51 @@ main {
 }
 
 .post-card .post-card-link {
-  display: block;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: var(--space);
+  row-gap: 0;
+  align-items: start;
   padding: var(--space);
   border: none;
   color: inherit;
+}
+
+.post-card .post-thumb {
+  grid-column: 1;
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+/* Single text cell: date, title, excerpt stack with no extra row gap */
+.post-card .post-card-body {
+  grid-column: 2;
+  min-width: 0;
+}
+
+.post-card .post-card-body .post-excerpt {
+  margin-top: 0.25rem;
+}
+
+/* Home page recent posts: full-sized hero images, flex column layout */
+.recent-posts .post-card-link {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.recent-posts .post-hero {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  min-height: 0;
+  object-fit: cover;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  display: block;
 }
 
 .post-card .post-card-link:hover {

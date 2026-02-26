@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How I Made a Blog Post Image Generating Skill — LUMP Depot</title>
+  <meta name="description"
+    content="Building a Cursor skill with Node calling Gemini for hero images and ffmpeg to compress them to JPEG—no npm deps, one API key.">
+  <link rel="canonical" href="https://lumpdepot.pages.dev/blog/2026-02-26-how-we-made-a-blog-post-image-generating-skill.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="How I Made a Blog Post Image Generating Skill — LUMP Depot">
+  <meta property="og:description"
+    content="Building a Cursor skill with Node calling Gemini for hero images and ffmpeg to compress them to JPEG—no npm deps, one API key.">
+  <meta property="og:url" content="https://lumpdepot.pages.dev/blog/2026-02-26-how-we-made-a-blog-post-image-generating-skill.html">
+  <meta property="og:image" content="https://lumpdepot.pages.dev/blog/images/how-we-made-a-blog-post-image-generating-skill-hero.jpg">
+  <meta property="article:published_time" content="2026-02-26">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="How I Made a Blog Post Image Generating Skill">
+  <meta name="twitter:image" content="https://lumpdepot.pages.dev/blog/images/how-we-made-a-blog-post-image-generating-skill-hero.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+  <header class="site-header" role="banner">
+    <div class="site-header-inner">
+      <p class="site-title"><a href="../index.html"><img src="../glyph.png" alt="" class="site-logo" width="32"
+            height="32">LUMP Depot</a></p>
+      <nav class="site-nav" aria-label="Main">
+        <a href="../index.html">Home</a>
+        <a href="../about.html">About</a>
+        <a href="index.html">Blog</a>
+        <a href="../contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <article itemscope itemtype="https://schema.org/BlogPosting">
+      <header class="article-header">
+        <nav aria-label="Breadcrumb">
+          <a href="index.html" class="back-link">← Blog</a>
+        </nav>
+        <h1 class="article-title" itemprop="headline">How I Made a Blog Post Image Generating Skill</h1>
+        <time class="article-date" datetime="2026-02-26" itemprop="datePublished">2026-02-26</time>
+      </header>
+
+      <div class="article-body">
+        <img src="images/how-we-made-a-blog-post-image-generating-skill-hero.jpg" alt="How I Made a Blog Post Image Generating Skill" class="article-hero" width="600" height="auto">
+
+        <p>I wanted every post to have a hero image that matched the site's Crystalline Aesthetic—icy blues on black, faceted vector look—without hand-crafting a prompt each time. So I turned it into a Cursor skill: a SKILL.md that tells the agent when and how to run it, plus a small Node script that reads the post HTML, pulls title and body text, calls the Gemini API with a fixed style prompt, and saves the result into <code>blog/images/</code> and patches the post (hero <code>&lt;img&gt;</code> plus <code>og:image</code> and <code>twitter:image</code>). No npm deps; just <code>GEMINI_KEY</code> in <code>.env</code> and Node 18+. The script uses built-in <code>fetch</code> to hit the Gemini image endpoint—you pass the post content, it returns a PNG, you write it to disk and patch the HTML.</p>
+
+        <p>The useful part was locking the aesthetic in the skill. The script sends the same Crystalline Aesthetic block every time and only varies the post content. That way the agent doesn't have to remember hex codes or "bold outlines" or "sparkle at vertices"—it just runs the skill and the script does the prompt engineering. If a post already has an image we skip unless you ask to regenerate. Keeps things consistent and repeatable.</p>
+
+        <p>For file size I added a separate step that runs ffmpeg over everything in <code>blog/images/</code> that isn't already a JPG: convert to JPEG at 90% quality, update all the HTML refs, then remove the originals. One command after you've generated or regenerated images and the site serves smaller assets. No npm for that either—just ffmpeg on the PATH.</p>
+
+        <p>tl;dr: one skill, one Node script calling Gemini, one API key; optionally ffmpeg to compress. You say "add an image to this post" and the agent runs it. Same look every time, no fuss.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="site-footer-inner">
+      LUMP Depot — Largely Universal Model Prompts. Static site on Cloudflare Pages.
+    </div>
+  </footer>
+</body>
+
+</html>

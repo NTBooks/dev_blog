@@ -1,0 +1,7 @@
+{
+  "name": "lump-depot",
+  "private": true,
+  "devDependencies": {
+    "sharp": "^0.33.5"
+  }
+}
