@@ -1,6 +1,6 @@
 ---
 name: blog-image-gen
-description: Generates a crystalline-aesthetic hero image for a LUMP Depot blog post using the Gemini API (GEMINI_KEY in .env), saves it under blog/images/, and inserts it into the post plus og/twitter meta. Use when the user wants to add or regenerate a post image. Skips posts that already have an image unless the user says to regenerate.
+description: Generates a crystalline-aesthetic hero image for a LUMP Depot blog post using the Gemini API (GEMINI_KEY in .env), saves it under blog/images/, and inserts it into the post plus og/twitter meta. After generating, run the blog-thumbnails compress script so the hero becomes a 1200px JPG for sharp embeds. Use when the user wants to add or regenerate a post image. Skips posts that already have an image unless the user says to regenerate.
 ---
 
 # Blog image generation (LUMP Depot)
@@ -48,6 +48,12 @@ The script will:
 5. Save the image as `blog/images/<slug>-hero.png` (creating `blog/images/` if needed). Slug is derived from the filename (e.g. `2026-02-25-keep-your-agents-in-a-fishbowl.html` → `keep-your-agents-in-a-fishbowl`).
 6. Insert a hero `<img>` at the start of `<div class="article-body">` and add `og:image` and `twitter:image` meta tags (and set `twitter:card` to `summary_large_image` if appropriate).
 
+**After generating:** Run the compress script so the hero is converted to a **1200px-wide JPG** for sharp social/embed previews (LinkedIn, og:image, etc.). The compress script updates all post and meta references to the `.jpg` and removes the original PNG:
+
+```bash
+node .cursor/skills/blog-thumbnails/scripts/compress-blog-images.js
+```
+
 ## Base prompt (Crystalline Aesthetic)
 
 The script sends this aesthetic as the fixed style; the variable part is the post content.
@@ -89,12 +95,14 @@ Applied to: Diamond Soul / L.U.M.P.
 
 | What            | Location |
 |-----------------|----------|
-| Generated image | `blog/images/<slug>-hero.png` |
-| Hero img in post | First child of `<div class="article-body">` |
-| og:image / twitter:image | In `<head>`, full URL: `https://lumpdepot.pages.dev/blog/images/<slug>-hero.png` |
+| Generated image | `blog/images/<slug>-hero.png` (run compress to get JPG) |
+| After compress  | `blog/images/<slug>-hero.jpg` at **1200px wide** (canonical for embeds) |
+| Hero img in post | First child of `<div class="article-body">` (compress script updates to `.jpg`) |
+| og:image / twitter:image | In `<head>`, full URL to `.jpg` after compress (e.g. `.../blog/images/<slug>-hero.jpg`) |
 
 ## Quick reference
 
 - **Script:** `.cursor/skills/blog-image-gen/scripts/generate-blog-image.js`
 - **Env:** `GEMINI_KEY` in project root `.env`
 - **Skip rule:** Post already has image → skip unless user says regenerate (`--regenerate`).
+- **Pattern:** Generate hero PNG → run `compress-blog-images.js` → serve 1200px hero JPG for embeds.

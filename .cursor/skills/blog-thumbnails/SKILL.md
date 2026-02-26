@@ -7,6 +7,8 @@ description: Generates 200x200 thumbnail images for blog posts using the Gemini 
 
 Generate **new** 200×200 thumbnail images for each blog post using the **Gemini API**. Thumbnails are **intelligently generated** to fit the constraints: crystalline aesthetic on black, **no text**, square, representing the post theme visually only (symbol or abstract shape). They are not resized hero images.
 
+**Image pipeline:** Both hero images (blog-image-gen) and thumbnails (this skill) are generated as PNG. Run the **compress script** after generating so the site serves JPGs: heroes at **1200px wide** for sharp embeds (LinkedIn, og:image), thumbs at native size. The compress script updates all HTML references to `.jpg` and removes the original PNGs.
+
 ## When to use
 
 - User asks to **add thumbnails** to the blog listing or **generate thumbnails** for posts.
@@ -80,11 +82,17 @@ node .cursor/skills/blog-thumbnails/scripts/compress-blog-images.js
 The script will:
 
 1. Find every file in `blog/images/` that is not already `.jpg` (e.g. `.png`).
-2. Run ffmpeg: `ffmpeg -i input -q:v 3 -y output.jpg` (q:v 3 ≈ 90% quality).
+2. Run ffmpeg: hero images are scaled to **1200px wide** (LinkedIn/social previews look sharp at 1200px+); thumbnails keep their size. Quality: `-q:v 2` (best).
 3. Update all HTML (blog posts, blog index, home page) so references point to the `.jpg` file.
 4. Remove the original non-JPG file.
 
 Run after adding or regenerating hero or thumbnail images so the site serves JPEGs.
+
+**Fix existing hero JPGs (e.g. low-res in LinkedIn preview):** Re-encode all `*-hero.jpg` to 1200px wide and high quality:
+
+```bash
+node .cursor/skills/blog-thumbnails/scripts/compress-blog-images.js --fix-hero
+```
 
 ---
 
@@ -95,3 +103,4 @@ Run after adding or regenerating hero or thumbnail images so the site serves JPE
 - **Env:** `GEMINI_KEY` in project root `.env`
 - **Skip:** Post already has `blog/images/<slug>-thumb.png` (or `.jpg`) → skip unless `--regenerate`.
 - **Optional:** `sharp` (npm install) for exact 200×200 resize. **Required for compression:** ffmpeg on PATH.
+- **Pattern:** Generate PNGs (hero + thumbs) → run compress → serve 1200px hero JPGs and thumb JPGs; run compress after any new or regenerated images.

@@ -12,17 +12,23 @@ const path = require("path");
 const { execSync } = require("child_process");
 
 const IMAGES_DIR = "blog/images";
-const JPEG_QUALITY = 3; // ffmpeg -q:v 2-5; 3 ≈ 90% quality
+const JPEG_QUALITY = 2; // ffmpeg -q:v 2-31; 2 = best quality
+const OG_IMAGE_MIN_WIDTH = 1200; // LinkedIn/social previews look sharp at 1200px+ wide
 
 function isJpg(name) {
   return /\.jpe?g$/i.test(name);
 }
 
-function compressToJpeg(projectRoot, inputPath, outputPath) {
-  execSync(
-    `ffmpeg -i ${JSON.stringify(inputPath)} -q:v ${JPEG_QUALITY} -frames:v 1 -y ${JSON.stringify(outputPath)}`,
-    { stdio: "inherit", cwd: projectRoot }
-  );
+function isHeroImage(baseName) {
+  return baseName.endsWith("-hero");
+}
+
+function compressToJpeg(projectRoot, inputPath, outputPath, baseName) {
+  const scale = isHeroImage(baseName)
+    ? ` -vf "scale=${OG_IMAGE_MIN_WIDTH}:-2"`
+    : "";
+  const cmd = `ffmpeg -i ${JSON.stringify(inputPath)}${scale} -q:v ${JPEG_QUALITY} -qmin ${JPEG_QUALITY} -qmax ${JPEG_QUALITY} -frames:v 1 -y ${JSON.stringify(outputPath)}`;
+  execSync(cmd, { stdio: "inherit", cwd: projectRoot });
 }
 
 function updateHtmlReferences(projectRoot, fromBasename, toBasename) {
@@ -45,11 +51,32 @@ function updateHtmlReferences(projectRoot, fromBasename, toBasename) {
   }
 }
 
+function fixHeroJpgs(projectRoot, imagesPath) {
+  const files = fs.readdirSync(imagesPath).filter((f) => f.endsWith("-hero.jpg"));
+  if (files.length === 0) return;
+  for (const file of files) {
+    const base = path.basename(file, ".jpg");
+    const inputPath = path.join(imagesPath, file);
+    const tempPath = path.join(imagesPath, `${base}.tmp.jpg`);
+    console.log("Re-encoding (1200px wide):", file);
+    compressToJpeg(projectRoot, inputPath, tempPath, base);
+    fs.unlinkSync(inputPath);
+    fs.renameSync(tempPath, inputPath);
+  }
+}
+
 function main() {
+  const args = process.argv.slice(2);
+  const fixHero = args.includes("--fix-hero");
   const projectRoot = path.resolve(process.cwd());
   const imagesPath = path.resolve(projectRoot, IMAGES_DIR);
   if (!fs.existsSync(imagesPath)) {
     console.log("No blog/images directory.");
+    return;
+  }
+  if (fixHero) {
+    fixHeroJpgs(projectRoot, imagesPath);
+    console.log("Done.");
     return;
   }
   const files = fs.readdirSync(imagesPath);
@@ -60,12 +87,11 @@ function main() {
   }
   for (const file of nonJpg) {
     const base = path.basename(file, path.extname(file));
-    const ext = path.extname(file);
     const inputPath = path.join(imagesPath, file);
     const outputPath = path.join(imagesPath, `${base}.jpg`);
     if (!fs.existsSync(inputPath)) continue;
     console.log("Compressing:", file);
-    compressToJpeg(projectRoot, inputPath, outputPath);
+    compressToJpeg(projectRoot, inputPath, outputPath, base);
     updateHtmlReferences(projectRoot, file, `${base}.jpg`);
     fs.unlinkSync(inputPath);
     console.log("  ->", `${base}.jpg`, "(removed original)");
