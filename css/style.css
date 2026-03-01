@@ -232,7 +232,7 @@ main {
 
 .post-card .post-card-link {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: minmax(0, auto) 1fr;
   column-gap: var(--space);
   row-gap: 0;
   align-items: start;
@@ -244,10 +244,14 @@ main {
 .post-card .post-thumb {
   grid-column: 1;
   width: 200px;
-  height: 200px;
+  min-width: 0;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 1;
   object-fit: cover;
   border-radius: var(--radius);
   border: 1px solid var(--border);
+  display: block;
 }
 
 /* Single text cell: date, title, excerpt stack with no extra row gap */
@@ -517,6 +521,14 @@ main {
   opacity: 0.8;
 }
 
+/* Article hero image: scale inside container on small screens */
+.article-body .article-hero {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: calc(var(--space) * 1.5) auto;
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   html {
@@ -534,5 +546,15 @@ main {
 
   .post-list .post-card {
     padding: var(--space) 1rem;
+  }
+
+  /* Blog listing: single column so thumb and text stack; thumb scales with container */
+  .post-list .post-card .post-card-link {
+    grid-template-columns: 1fr;
+  }
+
+  .post-list .post-card .post-thumb {
+    width: 100%;
+    max-width: 100%;
   }
 }

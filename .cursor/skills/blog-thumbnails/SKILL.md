@@ -44,7 +44,7 @@ node .cursor/skills/blog-thumbnails/scripts/generate-thumbnails.js --seed-image 
 The script will:
 
 1. Find every post file in `blog/` matching `YYYY-MM-DD-slug.html`.
-2. For each post, if `blog/images/<slug>-thumb.png` already exists and `--regenerate` was not passed, skip.
+2. For each post, if `blog/images/<slug>-thumb.png` or `blog/images/<slug>-thumb.jpg` already exists and `--regenerate` was not passed, skip.
 3. Extract title, description, and body excerpt from the post HTML.
 4. Call the Gemini API with a **thumbnail-specific prompt**: Crystalline Aesthetic, **no text**, square 200×200, represent the post theme with a single crystalline symbol or abstract shape.
 5. Save the image as `blog/images/<slug>-thumb.png` (resize to 200×200 with sharp if available).
@@ -101,6 +101,6 @@ node .cursor/skills/blog-thumbnails/scripts/compress-blog-images.js --fix-hero
 - **Thumbnails script:** `.cursor/skills/blog-thumbnails/scripts/generate-thumbnails.js`
 - **Compress script:** `.cursor/skills/blog-thumbnails/scripts/compress-blog-images.js`
 - **Env:** `GEMINI_KEY` in project root `.env`
-- **Skip:** Post already has `blog/images/<slug>-thumb.png` (or `.jpg`) → skip unless `--regenerate`.
+- **Skip:** Post already has `blog/images/<slug>-thumb.png` or `<slug>-thumb.jpg` → skip unless `--regenerate`.
 - **Optional:** `sharp` (npm install) for exact 200×200 resize. **Required for compression:** ffmpeg on PATH.
 - **Pattern:** Generate PNGs (hero + thumbs) → run compress → serve 1200px hero JPGs and thumb JPGs; run compress after any new or regenerated images.

@@ -181,15 +181,21 @@ async function main() {
   const seedPart = getSeedImagePart(projectRoot, seedPath);
   if (seedPart) console.log("Using seed image for style reference.");
 
+  function thumbExists(slug) {
+    const png = path.join(imagesPath, `${slug}-thumb.png`);
+    const jpg = path.join(imagesPath, `${slug}-thumb.jpg`);
+    return fs.existsSync(png) || fs.existsSync(jpg);
+  }
+
   const thumbsCreated = [];
   for (const postPath of postFiles) {
     const slug = slugFromPostPath(postPath);
     if (!slug) continue;
-    const thumbPath = path.join(imagesPath, `${slug}-thumb.png`);
-    if (fs.existsSync(thumbPath) && !regenerate) {
+    if (thumbExists(slug) && !regenerate) {
       thumbsCreated.push(slug);
       continue;
     }
+    const thumbPath = path.join(imagesPath, `${slug}-thumb.png`);
     const html = fs.readFileSync(postPath, "utf8");
     const title = extractTitle(html);
     const description = extractDescription(html);
@@ -212,8 +218,8 @@ async function main() {
   if (fs.existsSync(imagesPathForList)) {
     const files = fs.readdirSync(imagesPathForList);
     const existing = files
-      .filter((f) => f.endsWith("-thumb.png"))
-      .map((f) => f.replace(/-thumb\.png$/i, ""));
+      .filter((f) => f.endsWith("-thumb.png") || f.endsWith("-thumb.jpg"))
+      .map((f) => f.replace(/-thumb\.(png|jpg)$/i, ""));
     const allSlugs = [...new Set([...thumbsCreated, ...existing])];
     updateListing(projectRoot, allSlugs);
   }
