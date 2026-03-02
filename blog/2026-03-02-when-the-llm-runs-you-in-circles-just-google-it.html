@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>When the LLM Runs You in Circles, Just Google It, LUMP Depot</title>
+  <meta name="description"
+    content="How to spot when AI is running you in circles, and why a quick search often beats two hours of kernel edits and recycled advice.">
+  <link rel="canonical"
+    href="https://lumpdepot.pages.dev/blog/2026-03-02-when-the-llm-runs-you-in-circles-just-google-it.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="When the LLM Runs You in Circles, Just Google It, LUMP Depot">
+  <meta property="og:description"
+    content="How to spot when AI is running you in circles, and why a quick search often beats two hours of kernel edits and recycled advice.">
+  <meta property="og:url"
+    content="https://lumpdepot.pages.dev/blog/2026-03-02-when-the-llm-runs-you-in-circles-just-google-it.html">
+  <meta property="og:image" content="https://lumpdepot.pages.dev/blog/images/when-the-llm-runs-you-in-circles-just-google-it-hero.jpg">
+  <meta property="article:published_time" content="2026-03-02">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="When the LLM Runs You in Circles, Just Google It">
+  <meta name="twitter:image" content="https://lumpdepot.pages.dev/blog/images/when-the-llm-runs-you-in-circles-just-google-it-hero.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+  <header class="site-header" role="banner">
+    <div class="site-header-inner">
+      <p class="site-title"><a href="../index.html"><img src="../glyph.png" alt="" class="site-logo" width="32"
+            height="32">LUMP Depot</a></p>
+      <nav class="site-nav" aria-label="Main">
+        <a href="../index.html">Home</a>
+        <a href="../about.html">About</a>
+        <a href="index.html">Blog</a>
+        <a href="../contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <article itemscope itemtype="https://schema.org/BlogPosting">
+      <header class="article-header">
+        <nav aria-label="Breadcrumb">
+          <a href="index.html" class="back-link">← Blog</a>
+        </nav>
+        <h1 class="article-title" itemprop="headline">When the LLM Runs You in Circles, Just Google It</h1>
+        <time class="article-date" datetime="2026-03-02" itemprop="datePublished">2026-03-02</time>
+      </header>
+
+      <div class="article-body">
+        <img src="images/when-the-llm-runs-you-in-circles-just-google-it-hero.jpg" alt="When the LLM Runs You in Circles, Just Google It" class="article-hero" width="600" height="auto">
+
+        <p>I was chasing an audio bug on Linux Mint. The LLM had me doing the heavy stuff: changing kernel version, editing grub, touching boot records. Then it started giving me the same advice I'd already tried, the stuff I knew didn't work.</p>
+
+        <p>Two hours in I gave up and googled it. Top result: a thread that described my exact issue. I jumped to the end. The answer was that on my specific laptop you have to shut it down, not restart, for the audio hardware to reset.</p>
+
+        <p>Before LLMs I would have found that in five minutes.</p>
+
+        <p>So how do you spot the spiral? The advice starts repeating. The fixes get more drastic (kernel, grub, boot) while your actual problem is probably something dumb and hardware-specific that only shows up in forum threads. The model is pattern-matching on "Linux audio broken" and serving you the generic escalation playbook. It doesn't know your machine. It doesn't know that one weird thread from 2022.</p>
+
+        <p>You gotta know when to get back to what you know. Search. Skip to the end of the thread. Let someone who had your exact setup tell you the answer.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="site-footer-inner">
+      LUMP Depot: Largely Universal Model Prompts. Static site on Cloudflare Pages.
+    </div>
+  </footer>
+</body>
+
+</html>

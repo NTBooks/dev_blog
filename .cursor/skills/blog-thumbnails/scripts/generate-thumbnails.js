@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /**
  * Generate 200x200 thumbnail images for blog posts using the Gemini API.
- * Thumbnails are new images (not resized heroes): crystalline aesthetic, NO text,
- * square, representing the post theme visually only.
+ * Brand aesthetic is loaded from .cursor/skills/brand-guidelines/brand-prompt.md.
+ * Thumbnails are new images (not resized heroes): NO text, square, representing
+ * the post theme visually only.
  * Uses GEMINI_KEY from .env in project root. Optional: sharp to resize output to 200x200.
  *
  * Usage: node generate-thumbnails.js [--regenerate] [--seed-image path]
@@ -17,20 +18,21 @@ const MODEL = "gemini-3-pro-image-preview";
 const BLOG_DIR = "blog";
 const IMAGES_DIR = "blog/images";
 const LISTING_PATH = "blog/index.html";
+const BRAND_PROMPT_PATH = ".cursor/skills/brand-guidelines/brand-prompt.md";
 
-const THUMB_PROMPT = `Generate a SMALL SQUARE image (200x200 pixels or equivalent) for use as a thumbnail. Use this aesthetic:
+function loadBrandPrompt(projectRoot) {
+  const promptPath = path.join(projectRoot, BRAND_PROMPT_PATH);
+  if (!fs.existsSync(promptPath)) {
+    console.error(`Brand prompt not found: ${promptPath}`);
+    console.error("Expected a brand-guidelines skill at .cursor/skills/brand-guidelines/");
+    process.exit(1);
+  }
+  return fs.readFileSync(promptPath, "utf8").trim();
+}
 
-BRAND STYLE GUIDE: THE CRYSTALLINE AESTHETIC (thumbnail version)
-- Same philosophy: clean, faceted, sparkling blue diamond/ice vector style on BLACK background.
-- Color palette: Deep Navy (#0A1E35) outlines, Mid-Blue (#2E86C1) facets, Icy Cyan (#AEEEEE) highlights, Pure White (#FFFFFF) sparkles. No warm colors. Background: solid BLACK.
-- Faceted structure, bold dark blue outlines, high contrast gradients, white specular sparkles at vertices.
-
-CRITICAL CONSTRAINTS:
-1. NO TEXT: Do not include any words, letters, numbers, or labels in the image. The image must be purely visual/symbolic. No typography.
-2. SQUARE: The image must be square and suitable for a 200x200 pixel thumbnail. One clear focal subject or icon that reads at small size.
-3. SIMPLE: Represent the post theme with a single crystalline symbol or abstract shape—not a busy scene. It will be displayed at 200x200.
-
-Post to illustrate (use only the theme/topic to design a simple crystalline icon or symbol; do not render any of this text):`;
+function buildThumbPrompt(brandPrompt) {
+  return `Generate a SMALL SQUARE image (200x200 pixels or equivalent) for use as a thumbnail. Use this aesthetic:\n\n${brandPrompt}\n\nCRITICAL CONSTRAINTS:\n1. NO TEXT: Do not include any words, letters, numbers, or labels in the image. The image must be purely visual/symbolic. No typography.\n2. BACKGROUND COLOR: The background color specified in the brand guide above is CRITICAL. You MUST use exactly that background color. Do not substitute, lighten, darken, or ignore it.\n3. FILL THE FRAME: The icon or symbol must be as large as possible within the square, filling the available space edge-to-edge. Minimize empty margins. The subject should dominate the thumbnail.\n4. SQUARE: The image must be square and suitable for a 200x200 pixel thumbnail.\n5. SIMPLE: Represent the post theme with a single symbol or abstract shape—not a busy scene. It will be displayed at 200x200.\n\nPost to illustrate (use only the theme/topic to design a simple icon or symbol; do not render any of this text):`;
+}
 
 function loadEnv(projectRoot) {
   const envPath = path.join(projectRoot, ".env");
@@ -59,7 +61,11 @@ function slugFromPostPath(postPath) {
 
 function extractTitle(html) {
   const m = html.match(/<title[^>]*>([^<]+)<\/title>/i);
-  return m ? m[1].replace(/\s*—\s*LUMP Depot\s*$/, "").trim() : "";
+  if (!m) return "";
+  let title = m[1].trim();
+  const sep = title.lastIndexOf(" \u2014 ");
+  if (sep > 0) title = title.slice(0, sep).trim();
+  return title;
 }
 
 function extractDescription(html) {
@@ -178,6 +184,9 @@ async function main() {
   const imagesPath = path.join(projectRoot, IMAGES_DIR);
   if (!fs.existsSync(imagesPath)) fs.mkdirSync(imagesPath, { recursive: true });
 
+  const brandPrompt = loadBrandPrompt(projectRoot);
+  const thumbPrompt = buildThumbPrompt(brandPrompt);
+
   const seedPart = getSeedImagePart(projectRoot, seedPath);
   if (seedPart) console.log("Using seed image for style reference.");
 
@@ -200,7 +209,7 @@ async function main() {
     const title = extractTitle(html);
     const description = extractDescription(html);
     const bodyText = extractBodyText(html);
-    const fullPrompt = `${THUMB_PROMPT}\n\nTitle: ${title}\nDescription: ${description}\n\nContent (excerpt):\n${bodyText}`;
+    const fullPrompt = `${thumbPrompt}\n\nTitle: ${title}\nDescription: ${description}\n\nContent (excerpt):\n${bodyText}`;
 
     console.log("Generating thumb for:", title);
     let buffer = await generateImage(apiKey, fullPrompt, seedPart);

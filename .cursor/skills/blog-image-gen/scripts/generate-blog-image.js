@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 /**
- * Generate a crystalline-aesthetic hero image for a blog post using the Gemini API.
- * Uses GEMINI_KEY from .env in project root. No npm dependencies (Node 18+ with fetch).
+ * Generate a hero image for a blog post using the Gemini API.
+ * Brand aesthetic is loaded from .cursor/skills/brand-guidelines/brand-prompt.md.
+ * Uses GEMINI_KEY (and optional SITE_URL) from .env in project root.
+ * No npm dependencies (Node 18+ with fetch).
  *
  * Usage: node generate-blog-image.js blog/YYYY-MM-DD-slug.html [--regenerate] [--seed-image path]
  * If --seed-image is omitted, script looks for logo.jpg in project root.
@@ -10,45 +12,22 @@
 const fs = require("fs");
 const path = require("path");
 
-const BASE_URL = "https://lumpdepot.pages.dev";
 const MODEL = "gemini-3-pro-image-preview";
+const BRAND_PROMPT_PATH = ".cursor/skills/brand-guidelines/brand-prompt.md";
 
-const BASE_PROMPT = `Generate a black background image for this post using this aesthetic:
+function loadBrandPrompt(projectRoot) {
+  const promptPath = path.join(projectRoot, BRAND_PROMPT_PATH);
+  if (!fs.existsSync(promptPath)) {
+    console.error(`Brand prompt not found: ${promptPath}`);
+    console.error("Expected a brand-guidelines skill at .cursor/skills/brand-guidelines/");
+    process.exit(1);
+  }
+  return fs.readFileSync(promptPath, "utf8").trim();
+}
 
-BRAND STYLE GUIDE: THE CRYSTALLINE AESTHETIC
-Applied to: Diamond Soul / L.U.M.P.
-
-1. CORE PHILOSOPHY
-The visual identity is defined by permanence, clarity, and digital magic. Every visual element must be rendered as a clean, professional vector illustration carved from faceted, sparkling blue diamond or ice. The aesthetic is rigid, cool, and highly reflective.
-
-2. COLOR PALETTE
-The brand relies on a strict monochromatic icy-blue scheme highlighted with white. No warm colors should be present.
-
-Swatch (Approx) | Role | Description
-#0A1E35 (Deep Navy) | Outlines & Shadows | The structural container for all elements. Bold and uniform.
-#2E86C1 (Mid-Blue) | Primary Body | The main color for gradients and facets.
-#AEEEEE (Icy Cyan) | Highlights & Edges | Used to define sharp edges and lighter facets.
-#FFFFFF (Pure White) | Specular Glints | Mandatory sparkle effects and starbursts at intersecting facets.
-Background for this image: solid BLACK (not white) so the crystalline elements stand out.
-
-3. ICONOGRAPHY & ILLUSTRATION STYLE
-All imagery must adhere to the "Cartoon Crystalline" vector style.
-Faceted Structure: Subjects are not organic; they are constructed of geometric crystal facets.
-Bold Outlines: Every element, including internal facet lines, must have a prominent dark blue outline.
-High Contrast Lighting: Depth is created through sharp gradients within the facets, transitioning quickly from deep blue to bright cyan.
-The "Sparkle" Factor: Specular highlights (white starbursts) are essential at key vertices to convey a hard, reflective texture.
-
-4. TYPOGRAPHY (if text appears)
-Primary Headers: Bold, blocky, sans-serif, uppercase, same faceted crystal texture and sparkle as the icons.
-Secondary Subtitles: Simple, bold, sans-serif in Deep Navy or Mid-Blue for readability.
-CRITICAL — SPELLING: Before finalizing the image, verify that any text rendered in the image is spelled correctly. Check each word against the post title, theme, and standard English spelling. Do not include misspellings.
-
-5. USAGE
-Do not place primary elements on flat color fills. Do not remove the dark blue outlines. Keep the image suitable for a blog hero on black background.
-
----
-
-Post to illustrate:`;
+function buildHeroPrompt(brandPrompt) {
+  return `Generate a black background image for this post using this aesthetic:\n\n${brandPrompt}\n\n---\n\nPost to illustrate:`;
+}
 
 function loadEnv(projectRoot) {
   const envPath = path.join(projectRoot, ".env");
@@ -83,7 +62,23 @@ function hasExistingImage(html) {
 
 function extractTitle(html) {
   const m = html.match(/<title[^>]*>([^<]+)<\/title>/i);
-  return m ? m[1].replace(/\s*—\s*LUMP Depot\s*$/, "").trim() : "";
+  if (!m) return "";
+  let title = m[1].trim();
+  const sep = title.lastIndexOf(" \u2014 ");
+  if (sep > 0) title = title.slice(0, sep).trim();
+  return title;
+}
+
+function extractSiteUrl(html, envUrl) {
+  if (envUrl) return envUrl;
+  const m = html.match(/<meta\s+property="og:url"\s+content="([^"]*)"/i);
+  if (m) {
+    try {
+      const url = new URL(m[1]);
+      return url.origin;
+    } catch { /* fall through */ }
+  }
+  return "";
 }
 
 function extractDescription(html) {
@@ -141,8 +136,8 @@ async function generateImage(apiKey, prompt, seedPart) {
   throw new Error("No image in Gemini response");
 }
 
-function insertImageIntoHtml(html, slug, title) {
-  const imageUrl = `${BASE_URL}/blog/images/${slug}-hero.png`;
+function insertImageIntoHtml(html, slug, title, siteUrl) {
+  const imageUrl = `${siteUrl}/blog/images/${slug}-hero.png`;
   const imgTag = `<img src="images/${slug}-hero.png" alt="${title.replace(/"/g, "&quot;")}" class="article-hero" width="600" height="auto">`;
 
   let out = html;
@@ -203,11 +198,15 @@ async function main() {
     process.exit(0);
   }
 
+  const brandPrompt = loadBrandPrompt(projectRoot);
+  const heroPrompt = buildHeroPrompt(brandPrompt);
+  const siteUrl = extractSiteUrl(html, env.SITE_URL || "");
+
   const slug = slugFromPostPath(postPath);
   const title = extractTitle(html);
   const description = extractDescription(html);
   const bodyText = extractBodyText(html);
-  const fullPrompt = `${BASE_PROMPT}\n\nTitle: ${title}\nDescription: ${description}\n\nContent (excerpt):\n${bodyText}`;
+  const fullPrompt = `${heroPrompt}\n\nTitle: ${title}\nDescription: ${description}\n\nContent (excerpt):\n${bodyText}`;
 
   const seedPart = getSeedImagePart(projectRoot, seedPath);
   if (seedPart) console.log("Using seed image for style reference.");
@@ -220,7 +219,7 @@ async function main() {
   fs.writeFileSync(imagePath, imageBuffer);
   console.log("Saved:", imagePath);
 
-  html = insertImageIntoHtml(html, slug, title);
+  html = insertImageIntoHtml(html, slug, title, siteUrl);
   fs.writeFileSync(absolutePath, html);
   console.log("Updated post HTML with hero image and og:image / twitter:image.");
 }
