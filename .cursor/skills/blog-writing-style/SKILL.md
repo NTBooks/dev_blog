@@ -51,7 +51,7 @@ Apply this style when drafting or editing blog content for this site. The voice 
 
 ## What to avoid
 
-- Overused semicolons, em dashes, or exclamation marks.
+- Overused semicolons or exclamation marks. Do not use em dashes (—); use a colon, period, comma, or rephrase. For titles (e.g. post title | site name), use a pipe, not an em dash.
 - Emojis and heavy internet slang (light slang like "tl;dr" is fine).
 - Repetitive sentence openings or structure.
 - Long, formal intros before the point.
