@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skills That Know What's in Stock | LUMP Depot</title>
+  <meta name="description"
+    content="A skill built around real inventory can guide you to an actual product that actually exists. That's more useful than a well-read guess from training data.">
+  <link rel="canonical" href="https://lumpdepot.pages.dev/blog/2026-03-14-skills-that-know-whats-in-stock.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Skills That Know What's in Stock | LUMP Depot">
+  <meta property="og:description"
+    content="A skill built around real inventory can guide you to an actual product that actually exists. That's more useful than a well-read guess from training data.">
+  <meta property="og:url" content="https://lumpdepot.pages.dev/blog/2026-03-14-skills-that-know-whats-in-stock.html">
+  <meta property="og:image" content="https://lumpdepot.pages.dev/blog/images/skills-that-know-whats-in-stock-hero.jpg">
+  <meta property="article:published_time" content="2026-03-14">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Skills That Know What's in Stock">
+  <meta name="twitter:image" content="https://lumpdepot.pages.dev/blog/images/skills-that-know-whats-in-stock-hero.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+  <header class="site-header" role="banner">
+    <div class="site-header-inner">
+      <p class="site-title"><a href="../index.html"><img src="../glyph.png" alt="" class="site-logo" width="32"
+            height="32">LUMP Depot</a></p>
+      <nav class="site-nav" aria-label="Main">
+        <a href="../index.html">Home</a>
+        <a href="../about.html">About</a>
+        <a href="index.html">Blog</a>
+        <a href="../contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <article itemscope itemtype="https://schema.org/BlogPosting">
+      <header class="article-header">
+        <nav aria-label="Breadcrumb">
+          <a href="index.html" class="back-link">← Blog</a>
+        </nav>
+        <h1 class="article-title" itemprop="headline">Skills That Know What's in Stock</h1>
+        <time class="article-date" datetime="2026-03-14" itemprop="datePublished">2026-03-14</time>
+      </header>
+
+      <div class="article-body">
+        <img src="images/skills-that-know-whats-in-stock-hero.jpg" alt="Skills That Know What's in Stock | LUMP Depot" class="article-hero" width="600" height="auto">
+
+        <p>I shared a skill with a friend yesterday. It runs a quiz to figure out your 90s band. That's the whole thing.
+          You answer a few questions, and you land on one result from a fixed set.</p>
+
+        <p>It sounds like a Buzzfeed quiz. It kind of is. But the way it works is what I actually wanted him to see.</p>
+
+        <h2>A branching tree in disguise</h2>
+
+        <p>The skill is a decision tree. Each question narrows the path. If you name a band you like early, that's your
+          answer right there. If you keep dodging, the questions keep branching, but you always end up at exactly one
+          result.</p>
+
+        <p>I got Beck, which fits me a little too well. He got the Cranberries in three questions. The LLM runs the
+          whole thing. It asks, listens, routes you. You don't see any branching logic. You just answer until you land
+          somewhere.</p>
+
+        <p>There's a demo skill at <a href="https://dsoul.org/wp-json/diamond-soul/v1/file/364/skill">dsoul.org</a> if
+          you want to try it.</p>
+
+        <h2>The real use case is shopping</h2>
+
+        <p>That quiz is a proof of concept. The actual point is something like this: say you have 40 pairs of sneakers
+          in inventory. A customer tells the LLM: "Help me pick out sneakers." The LLM runs the skill. It asks about
+          fit, style, use case. It routes through the tree and lands on one pair from your actual stock.</p>
+
+        <p>Not a suggestion from training data. Not a product that was discontinued in 2023. One specific item you
+          actually have.</p>
+
+        <p>That's a meaningful difference. When you ask a general-purpose LLM to recommend something, it pulls from what
+          it knows about the world, which may or may not match what's on the shelf today. A skill built around real
+          inventory doesn't have that problem. It only offers what exists.</p>
+
+        <h2>The sponsored personal assistant</h2>
+
+        <p>This is a new kind of business model hiding in plain sight.</p>
+
+        <p>Right now, if you ask an LLM to help you shop at a specific grocery store, you'll get a generic answer based
+          on training data. Helpful enough, but it doesn't know what that store has this week, what's on sale, or what's
+          actually in stock at your location.</p>
+
+        <p>A store-specific skill fixes that. It's inventory-aware. When you say "help me get everything I need for
+          Thanksgiving dinner from Shop Rite," it can do that for real. The LLM is the interface. The skill is the
+          sponsored layer underneath, connected to the actual catalog.</p>
+
+        <p>The brand builds the skill. The skill knows the brand's real inventory. The customer gets an actionable
+          answer, not just an answer.</p>
+
+        <h2>That's the distinction</h2>
+
+        <p>There's a difference between "here are some good options" and "here is the one you should get, and it's in
+          stock." A general LLM gives you the first. A well-built skill gives you the second.</p>
+
+        <p>I have some products at work that need a lot of configuration before you can order them. I want to try
+          building a skill for that next. You answer the questions, it narrows things down, and at the end you get the
+          exact SKU that fits your situation.</p>
+
+        <p>You want an actionable answer, not just an answer. That's what a skill connected to real inventory unlocks.
+        </p>
+
+        <p>tl;dr: Skills can be inventory-aware shopping assistants. The LLM runs the interview, the skill routes you to
+          a real product that's actually available. It's a better model than hoping training data knows what's on the
+          shelf. The brands that build this first will have a real head start.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="site-footer-inner">
+      LUMP Depot: Largely Universal Model Prompts. Static site on Cloudflare Pages.
+    </div>
+  </footer>
+</body>
+
+</html>

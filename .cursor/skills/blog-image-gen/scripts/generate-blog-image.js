@@ -26,7 +26,7 @@ function loadBrandPrompt(projectRoot) {
 }
 
 function buildHeroPrompt(brandPrompt) {
-  return `Generate a black background image for this post using this aesthetic:\n\n${brandPrompt}\n\n---\n\nPost to illustrate:`;
+  return `Generate a black background image for this post using this aesthetic:\n\n${brandPrompt}\n\nIt can include LUMP Depot branding but not the logo or tagline. Simple infographics are preferred. We want these headers to do well on linkedin. \n\n---\n\nPost to illustrate:`;
 }
 
 function loadEnv(projectRoot) {
