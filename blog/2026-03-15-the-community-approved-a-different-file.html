@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What You Downloaded Isn't What Anyone Reviewed | LUMP Depot</title>
+  <meta name="description"
+    content="Blindly running install.sh or dropping in a skill.md from a URL is more dangerous than it looks. The version the community vetted might not be the version you got.">
+  <link rel="canonical"
+    href="https://lumpdepot.pages.dev/blog/2026-03-15-the-community-approved-a-different-file.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="What You Downloaded Isn't What Anyone Reviewed | LUMP Depot">
+  <meta property="og:description"
+    content="Blindly running install.sh or dropping in a skill.md from a URL is more dangerous than it looks. The version the community vetted might not be the version you got.">
+  <meta property="og:url"
+    content="https://lumpdepot.pages.dev/blog/2026-03-15-the-community-approved-a-different-file.html">
+  <meta property="og:image" content="https://lumpdepot.pages.dev/blog/images/the-community-approved-a-different-file-hero.jpg">
+  <meta property="article:published_time" content="2026-03-15">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="What You Downloaded Isn't What Anyone Reviewed">
+  <meta name="twitter:image" content="https://lumpdepot.pages.dev/blog/images/the-community-approved-a-different-file-hero.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+  <header class="site-header" role="banner">
+    <div class="site-header-inner">
+      <p class="site-title"><a href="../index.html"><img src="../glyph.png" alt="" class="site-logo" width="32"
+            height="32">LUMP Depot</a></p>
+      <nav class="site-nav" aria-label="Main">
+        <a href="../index.html">Home</a>
+        <a href="../about.html">About</a>
+        <a href="index.html">Blog</a>
+        <a href="../contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <article itemscope itemtype="https://schema.org/BlogPosting">
+      <header class="article-header">
+        <nav aria-label="Breadcrumb">
+          <a href="index.html" class="back-link">← Blog</a>
+        </nav>
+        <h1 class="article-title" itemprop="headline">What You Downloaded Isn't What Anyone Reviewed</h1>
+        <time class="article-date" datetime="2026-03-15" itemprop="datePublished">2026-03-15</time>
+      </header>
+
+      <div class="article-body">
+        <img src="images/the-community-approved-a-different-file-hero.jpg" alt="The Community Approved a Different File | LUMP Depot" class="article-hero" width="600" height="auto">
+
+        <p>You find a skill on someone's blog. The comments say it works great. You run the install command.</p>
+
+        <p>That's the whole attack surface right there.</p>
+
+        <h2>The server decides what you get</h2>
+
+        <p>A URL is just an address. What lives at that address is up to whoever controls the server, and they can serve different content to different visitors. By IP, by country, by ISP, by the org your request resolves to. The community vetted it from their machines. You got a different file.</p>
+
+        <p>It's trivial to set up, and it works because the community's approval is the cover. Ten people said the skill was clean. They were right, for them. A site can be a honeypot for a specific government agency, university network, or company subnet while looking completely fine to everyone else.</p>
+
+        <h2>GitHub doesn't save you</h2>
+
+        <p>People treat GitHub raw URLs as if they're pinned. They're not. The file at <code>raw.githubusercontent.com/user/repo/main/skill.md</code> is whatever's on <code>main</code> right now. Push a change, the URL changes. Account gets compromised, same deal.</p>
+
+        <p>You install a skill today, recommend the link next week, and by then it's different. The URL doesn't bind to content. It binds to a location. Locations change. A popular repo is a bigger target, not a safer one.</p>
+
+        <h2>Hash the address, not the server</h2>
+
+        <p>A CID (Content Identifier) is a cryptographic hash of the file's bytes. Change one byte, the CID changes. You can't swap the file without invalidating the address. The address and the content are the same thing.</p>
+
+        <p>That's the standard IPFS uses. Fetch a skill by CID from any public node and you get exactly what was published. No server deciding what you see. No IP-targeted bait-and-switch. A honeypot can't serve you a different file under the same CID; the math won't allow it.</p>
+
+        <h2>Share skills by CID, not by URL</h2>
+
+        <p>A URL asks people to trust your server indefinitely. A CID is a commitment: this exact set of bytes, nothing more. Anyone who fetches it from IPFS can confirm they have the same file you published, the same file anyone else reviewed. That guarantee doesn't expire.</p>
+
+        <p>If someone can't give you a CID, you don't actually know what you're running.</p>
+
+        <h2>install.sh is worse</h2>
+
+        <p>A <code>skill.md</code> tells an LLM how to behave. An <code>install.sh</code> runs as you, with your permissions, and can call home wherever it wants. The classic <code>curl https://example.com/install.sh | bash</code> is still everywhere. People have been warning about it for years. It persists because the tools for doing it better haven't been widely adopted yet.</p>
+
+        <p>Read the file before you run it. That's the floor. But reading it doesn't help if the server sends a different file to the next person you share the link with.</p>
+
+        <p>tl;dr: A URL is a promise about a location, not content. Share skills and scripts by CID instead. The CID is the hash, the hash is the proof, and you can't swap the file without changing the address.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="site-footer-inner">
+      LUMP Depot: Largely Universal Model Prompts. Static site on Cloudflare Pages.
+    </div>
+  </footer>
+</body>
+
+</html>
