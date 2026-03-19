@@ -41,6 +41,12 @@ Optional: use a logo or brand mark as a style reference (seed image). By default
 node .cursor/skills/blog-image-gen/scripts/generate-blog-image.js blog/YYYY-MM-DD-post-slug.html --seed-image logo.jpg
 ```
 
+Optional: extra composition notes (still uses brand prompt + post excerpt):
+
+```bash
+node .cursor/skills/blog-image-gen/scripts/generate-blog-image.js blog/YYYY-MM-DD-post-slug.html --regenerate --brief "Your scene direction here."
+```
+
 The script will:
 
 1. Load `GEMINI_KEY` from `.env` in the project root.

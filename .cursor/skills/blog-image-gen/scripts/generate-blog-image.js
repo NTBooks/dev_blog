@@ -5,7 +5,7 @@
  * Uses GEMINI_KEY (and optional SITE_URL) from .env in project root.
  * No npm dependencies (Node 18+ with fetch).
  *
- * Usage: node generate-blog-image.js blog/YYYY-MM-DD-slug.html [--regenerate] [--seed-image path]
+ * Usage: node generate-blog-image.js blog/YYYY-MM-DD-slug.html [--regenerate] [--seed-image path] [--brief "art direction"]
  * If --seed-image is omitted, script looks for logo.jpg in project root.
  */
 
@@ -168,10 +168,17 @@ function insertImageIntoHtml(html, slug, title, siteUrl) {
 
 async function main() {
   const args = process.argv.slice(2);
-  const postPath = args.find((a) => !a.startsWith("--"));
-  const regenerate = args.includes("--regenerate");
-  const seedIdx = args.indexOf("--seed-image");
-  const seedPath = seedIdx >= 0 && args[seedIdx + 1] ? args[seedIdx + 1] : null;
+  let postPath = null;
+  let regenerate = false;
+  let seedPath = null;
+  let imageBrief = "";
+  for (let i = 0; i < args.length; i++) {
+    const a = args[i];
+    if (a === "--regenerate") regenerate = true;
+    else if (a === "--seed-image") seedPath = args[++i] || null;
+    else if (a === "--brief") imageBrief = args[++i] || "";
+    else if (!a.startsWith("--")) postPath = postPath || a;
+  }
 
   if (!postPath) {
     console.error("Usage: node generate-blog-image.js blog/YYYY-MM-DD-slug.html [--regenerate]");
@@ -206,7 +213,10 @@ async function main() {
   const title = extractTitle(html);
   const description = extractDescription(html);
   const bodyText = extractBodyText(html);
-  const fullPrompt = `${heroPrompt}\n\nTitle: ${title}\nDescription: ${description}\n\nContent (excerpt):\n${bodyText}`;
+  const briefBlock = imageBrief
+    ? `\n\nArt direction (prioritize this for the composition):\n${imageBrief}`
+    : "";
+  const fullPrompt = `${heroPrompt}\n\nTitle: ${title}\nDescription: ${description}\n\nContent (excerpt):\n${bodyText}${briefBlock}`;
 
   const seedPart = getSeedImagePart(projectRoot, seedPath);
   if (seedPart) console.log("Using seed image for style reference.");
