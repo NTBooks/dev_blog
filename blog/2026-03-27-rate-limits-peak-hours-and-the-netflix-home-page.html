@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rate Limits, Peak Hours, and the Netflix Home Page | LUMP Depot</title>
+  <meta name="description"
+    content="The 10x test was only part of the story. Vendors are now shaping when you can burn through your session. Peak hours, cut features, and power costs are squeezing the cheap-token era from every side.">
+  <link rel="canonical" href="https://lumpdepot.pages.dev/blog/2026-03-27-rate-limits-peak-hours-and-the-netflix-home-page.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Rate Limits, Peak Hours, and the Netflix Home Page | LUMP Depot">
+  <meta property="og:description"
+    content="The 10x test was only part of the story. Vendors are now shaping when you can burn through your session. Peak hours, cut features, and power costs are squeezing the cheap-token era from every side.">
+  <meta property="og:url"
+    content="https://lumpdepot.pages.dev/blog/2026-03-27-rate-limits-peak-hours-and-the-netflix-home-page.html">
+  <meta property="og:image" content="https://lumpdepot.pages.dev/blog/images/rate-limits-peak-hours-and-the-netflix-home-page-hero.jpg">
+  <meta property="article:published_time" content="2026-03-27">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Rate Limits, Peak Hours, and the Netflix Home Page">
+  <meta name="twitter:image" content="https://lumpdepot.pages.dev/blog/images/rate-limits-peak-hours-and-the-netflix-home-page-hero.jpg">
+  <meta name="twitter:description"
+    content="The 10x test was only part of the story. Vendors are now shaping when you can burn through your session. Peak hours, cut features, and power costs are squeezing the cheap-token era from every side.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+  <header class="site-header" role="banner">
+    <div class="site-header-inner">
+      <p class="site-title"><a href="../index.html"><img src="../glyph.png" alt="" class="site-logo" width="32"
+            height="32">LUMP Depot</a></p>
+      <nav class="site-nav" aria-label="Main">
+        <a href="../index.html">Home</a>
+        <a href="../about.html">About</a>
+        <a href="index.html">Blog</a>
+        <a href="../contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <article itemscope itemtype="https://schema.org/BlogPosting">
+      <header class="article-header">
+        <nav aria-label="Breadcrumb">
+          <a href="index.html" class="back-link">← Blog</a>
+        </nav>
+        <h1 class="article-title" itemprop="headline">Rate Limits, Peak Hours, and the Netflix Home Page</h1>
+        <time class="article-date" datetime="2026-03-27" itemprop="datePublished">2026-03-27</time>
+      </header>
+
+      <div class="article-body">
+        <img src="images/rate-limits-peak-hours-and-the-netflix-home-page-hero.jpg" alt="Rate Limits, Peak Hours, and the Netflix Home Page | LUMP Depot" class="article-hero" width="600" height="auto">
+
+        <p>Last week I argued you should be willing to pay something like <strong>ten times</strong> what you're
+          paying now for the same LLM help and still call it a win, or your coding workflow doesn't really pencil out
+          long term. I still believe that frame. I was a little naive about one variable: <strong>time of
+          day</strong>.</p>
+
+        <p><a href="2026-03-21-the-token-price-hike-nobody-is-talking-about.html">That post</a> was about price.
+          This one is about when you're allowed to spend what you already bought.</p>
+
+        <h2>Peak hours eat wall-clock time</h2>
+
+        <p>Anthropic has been public about tightening how five-hour session limits behave during peak demand. The
+          short version from their side: weekly caps stay the same, but during busy windows your session burns faster
+          than "five hours on the clock" would suggest, especially if you're running token-heavy background work.
+          <a href="https://www.theregister.com/2026/03/26/anthropic_tweaks_usage_limits/">The Register</a> walked
+          through it with the usual bite.</p>
+
+        <p>Anthropic described peak in Pacific time (think early morning through late morning on the west coast).
+          Where I live that's roughly <strong>8:00 AM–2:00 PM Eastern</strong> on weekdays: normal business hours,
+          when you're actually trying to get work done. That's when a "five hour" allowance stops feeling like five
+          hours of real use.</p>
+
+        <p>So we're not only pricing the future. We're scheduling it.</p>
+
+        <h2>The cutbacks are spreading</h2>
+
+        <p>This isn't just one vendor tweaking dials. OpenAI had already been pulling back on things that were
+          expensive to run and light on paying users (hello, Sora-shaped line items). Google has been tightening
+          which premium models free users get in tools like Antigravity. Same pattern: demand up, margin thin, knobs
+          turn.</p>
+
+        <p>Meanwhile power isn't getting cheaper. You've seen the photos: diesel banks outside data centers, grid
+          stories that sound like war logistics. Energy is a real input. So is food when the next price wave hits.
+          The squeeze is not theoretical.</p>
+
+        <h2>When does it stop making sense?</h2>
+
+        <p>Here's the question I keep coming back to. If the model is great but you can't rely on it when you
+          actually want to work, and the escape hatch is hundreds of dollars a month for "enough" headroom, at what
+          point does that fail the average business user?</p>
+
+        <p>Right now people are still vibe-coding ideas as fast as they can type. My own experience says that phase
+          has a shelf life. You burn through the backlog of "what if we tried…" and then you're maintaining. At some
+          velocity, there simply aren't that many net-new features users are asking for. Code changes are mostly
+          bugs (which the models are cheerfully good at creating) and feature requests that slow down once the product
+          is good enough.</p>
+
+        <p>Then that $200 tab starts to feel like my Netflix home page. I'm paying. I've already watched everything
+          I cared about. The rows are full; nothing pulls me in. I think code gets there faster than people expect.</p>
+
+        <p>Will the whole industry level out on email drafting, content moderation, and blog posts? Is that enough to
+          justify the run rate? I don't have a tidy answer. I'm asking where the curve flattens.</p>
+
+        <h2>One more worry</h2>
+
+        <p>Separately: I have a hard time believing all the datacenter buildout happens as drawn on the slide decks.
+          A hundred billion dollars of concrete and GPUs is a fat target before you even get to the political layer.
+          Maybe I'm wrong. It still factors into how durable I think this moment is.</p>
+
+        <p>tl;dr: limits are moving from "how much money" to "what time of day" and "which tier." Stack that on power
+          and food and feature saturation, and the cheap-token party starts to look like a scheduling problem with a
+          subscription attached. I'm still using the tools. I'm just updating the model of what "enough" means.</p>
+
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="site-footer-inner">
+      LUMP Depot: Largely Universal Model Prompts. Static site on Cloudflare Pages.
+    </div>
+  </footer>
+</body>
+
+</html>
