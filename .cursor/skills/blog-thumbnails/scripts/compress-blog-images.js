@@ -39,7 +39,7 @@ function updateHtmlReferences(projectRoot, fromBasename, toBasename) {
     path.resolve(projectRoot, "index.html"),
     path.resolve(blogDir, "index.html"),
     ...fs.readdirSync(blogDir)
-      .filter((f) => /^\d{4}-\d{2}-\d{2}-.+\\.html$/.test(f))
+      .filter((f) => /^\d{4}-\d{2}-\d{2}-.+\.html$/.test(f))
       .map((f) => path.resolve(blogDir, f)),
   ];
   for (const file of files) {
