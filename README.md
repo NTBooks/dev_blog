@@ -1,71 +1,73 @@
 # LUMP Depot
 
-**L.U.M.P.** — Largely Universal Model Prompts. A static dark-mode dev blog.
+**L.U.M.P.** — Largely Universal Model Prompts. A static dark-mode dev blog built with [Eleventy](https://www.11ty.dev/).
 
 ## Structure
 
-- `index.html` — Homepage with recent posts
-- `about.html` — About LUMP and the blog
-- `contact.html` — How to get in touch
-- `blog/` — Blog index and dated posts (e.g. `2026-02-18-welcome-to-lump-depot.html`)
-- `css/style.css` — Single stylesheet (dark theme)
-- `404.html` — Not found page
+```
+src/
+  _includes/
+    layouts/        Nunjucks layouts (base, post, page)
+    partials/       Reusable components (header, footer, analytics)
+  _data/
+    site.json       Site-wide metadata (title, URL, gtag ID)
+  blog/
+    blog.json       Directory data file (sets layout for all posts)
+    *.html          Blog posts with YAML frontmatter
+    index.njk       Blog listing page (auto-generated from collection)
+    images/         Hero images, thumbnails, inline images
+  css/style.css     Single stylesheet (dark theme)
+  index.njk         Homepage with recent posts (auto-generated)
+  about.njk         About page
+  contact.njk       Contact page
+  404.njk           Not found page
+  sitemap.njk       Auto-generated sitemap
+```
+
+## Development
+
+```bash
+npm run dev        # Start dev server with live reload
+npm run build      # Build to _site/
+```
 
 ## Adding a post
 
-1. **Create the post file** `blog/YYYY-MM-DD-slug.html` using this structure (copy from `blog/2026-02-18-welcome-to-lump-depot.html` and adjust):
+1. Create `src/blog/YYYY-MM-DD-slug.html` with frontmatter:
 
-   - **Document:** Same `<head>` and site `<header>` / `<footer>` as other pages; `../` for CSS and nav links.
-   - **Main content:** One `<main id="main-content">` containing a single `<article itemscope itemtype="https://schema.org/BlogPosting">`.
-   - **Article header:** `<header class="article-header">` with breadcrumb `<nav aria-label="Breadcrumb">` (back link to blog), `<h1 class="article-title" itemprop="headline">`, and `<time class="article-date" datetime="YYYY-MM-DD" itemprop="datePublished">`.
-   - **Article body:** `<div class="article-body">` with sections as needed: `<section aria-labelledby="section-id">` and `<h2 id="section-id">` for each major part. Use `<p>`, `<ul>`/`<ol>`, `<pre>`/`<code>`, `<blockquote>` as needed. External links: add `class="external"` and `target="_blank" rel="noopener"` for repo links.
-
-2. **Blog index** (`blog/index.html`): Add a `<li>` inside the correct year `<section>` (or add a new `<section aria-labelledby="year-YYYY">` and `<h2 class="section-title" id="year-YYYY">YYYY</h2>` if it’s a new year). Each entry:
-
-   ```html
-   <li>
-     <article class="post-card">
-       <a href="YYYY-MM-DD-slug.html" class="post-card-link">
-         <header>
-           <time datetime="YYYY-MM-DD">YYYY-MM-DD</time>
-           <h3 class="post-title">Post title</h3>
-         </header>
-         <p class="post-excerpt">Short excerpt for the listing.</p>
-       </a>
-     </article>
-   </li>
+   ```yaml
+   ---
+   title: "Post Title"
+   date: YYYY-MM-DD
+   description: "Short excerpt for listings and social cards."
+   hero: slug-hero.jpg
+   thumb: slug-thumb.jpg
+   permalink: /blog/YYYY-MM-DD-slug.html
+   ---
    ```
 
-   Keep the `<ol class="post-list" reversed>` so newest posts appear first.
+2. Put the article body HTML below the frontmatter (no `<head>`, `<header>`, or `<footer>` — the layout handles those).
 
-3. **Homepage** (`index.html`): Add the same card block (with `href="blog/YYYY-MM-DD-slug.html"`) to the “Recent posts” `<ol class="post-list">`. Keep only the number of recent posts you want on the homepage.
+3. Drop hero and thumbnail images into `src/blog/images/`.
+
+4. Run `npm run build`. The homepage, blog listing, and sitemap update automatically.
 
 ## Deploy to Cloudflare Pages
 
-**Option A — Git (recommended)**
-
-1. Push this repo to GitHub (or GitLab).
-2. In [Cloudflare Dashboard](https://dash.cloudflare.com) → Pages → Create project → Connect to Git.
-3. Select the repo.
-4. Build settings:
-   - **Build command:** leave empty
-   - **Build output directory:** `/` (or `.`)
-5. Deploy. Cloudflare will serve the static files from the root.
-
-**Option B — Direct upload**
-
-1. Zip the project (ensure `index.html` is at the root of the zip).
-2. Pages → Create project → Direct Upload → upload the zip.
+1. Push this repo to GitHub.
+2. In Cloudflare Dashboard → Pages → Create project → Connect to Git.
+3. Build settings:
+   - **Build command:** `npx @11ty/eleventy`
+   - **Build output directory:** `_site`
+4. Deploy.
 
 ## Local preview
 
-Serve the folder with any static server, e.g.:
-
 ```bash
-npx serve .
+npm run dev
 ```
 
-Or open `index.html` in a browser (relative links work if you use a server).
+Opens at `http://localhost:8080` with live reload.
 
 ## License
 

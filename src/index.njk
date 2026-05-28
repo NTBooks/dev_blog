@@ -1,0 +1,37 @@
+---
+layout: layouts/base.njk
+title: LUMP Depot
+description: "LUMP Depot — the abyss staring back. What the LLMs think of me. L.U.M.P. = Largely Universal Model Prompts."
+permalink: /index.html
+---
+<section class="hero" aria-labelledby="hero-heading">
+  <img src="/blog/images/lump_dark.jpg" alt="LUMP Depot" class="hero-logo" width="600" height="auto">
+  <h1 id="hero-heading">LUMP Depot</h1>
+  <p class="tagline">The ingredients in the slop we turn into a stew, or
+    something.</p>
+</section>
+
+<section class="recent-posts" aria-labelledby="recent-posts-heading">
+  <header class="blog-header">
+    <h2 class="page-title" id="recent-posts-heading">Recent posts</h2>
+    <a href="/blog/" class="blog-all-link">View all →</a>
+  </header>
+  <ol class="post-list" reversed>
+    {%- for post in collections.posts | limit(16) %}
+    <li>
+      <article class="post-card">
+        <a href="{{ post.url }}" class="post-card-link">
+          {% if post.data.hero %}
+          <img class="post-hero" src="/blog/images/{{ post.data.hero }}" alt="{{ post.data.title }}">
+          {% endif %}
+          <header>
+            <time datetime="{{ post.data.date | isoDate }}">{{ post.data.date | isoDate }}</time>
+            <h3 class="post-title">{{ post.data.title }}</h3>
+          </header>
+          <p class="post-excerpt">{{ post.data.description }}</p>
+        </a>
+      </article>
+    </li>
+    {%- endfor %}
+  </ol>
+</section>

@@ -1,0 +1,54 @@
+---
+title: "Shooting Yourself in the Claude"
+date: 2026-04-03
+description: "I burned my whole AI context window on a single vibe-coding ask before a production incident. Out of context when it mattered: pay for more or wait hours for a reset. A new kind of footgun."
+hero: shooting-yourself-in-the-claude-hero.jpg
+thumb: shooting-yourself-in-the-claude-thumb.jpg
+permalink: /blog/2026-04-03-shooting-yourself-in-the-claude.html
+---
+<p>It was the end of the day on a holiday weekend. I still had a lot of context left in my plan, and I thought:
+          why not use some of it up before I go away. That is not a financial strategy. I just wanted to get my money's
+          worth, ya know?</p>
+
+        <p>I asked Claude what it would take to make a coin pusher game in JavaScript using three.js. Typical vibe
+          coding. Fun, low stakes, nothing riding on it. You know how this goes.</p>
+
+        <blockquote>
+          <p>What would it take to make a coin pusher game in JavaScript using three.js?</p>
+        </blockquote>
+
+        <p>One request. It used my entire five-hour context window on that single thread. The model went deep. I watched
+          the meter run down and I did not stop it, because it all seemed well and good. It's Friday. I'm just poking at
+          a toy.</p>
+
+        <h2>Then the ticket landed</h2>
+
+        <p>A critical issue came in. Something in the codebase needed investigating and fixing as soon as possible
+          because customers were affected. Not theoretical. Not "when you get a minute." Now.</p>
+
+        <p>And I was out of context. Flat empty. The assistant that usually knows my repo, my last ten decisions, and
+          the name of that weird helper function was suddenly unavailable unless I paid extra or waited.</p>
+
+        <p>So here's the new footgun, if we're keeping a list. You can burn your whole session on a single recreational
+          prompt and leave yourself with two bad options when real work shows up: turn on more billing and spend
+          something like twenty bucks on a problem you did not plan for, or sit there until the window resets in about
+          five hours and hope the outage tolerates that.</p>
+
+        <p>That is a maintenance risk, not a vibe risk. It's the same reason I've been banging the drum about not
+          getting too dependent on AI-assisted code and pure vibe coding for the stuff that actually pays the bills. The
+          tool is incredible until the meter is empty at the worst possible moment.</p>
+
+        <h2>The old way still worked</h2>
+
+        <p>Luckily I wrote most of this code myself. I could go in, read the stack traces, grep the weird paths, and
+          debug it the old-fashioned way. No context window required. It was slower and less glamorous, but it shipped.
+        </p>
+
+        <p>The uncomfortable question is how long that stays true. If more of the system only ever lived in long chat
+          threads and generated patches I skimmed, would I still have been able to do that under pressure? I'm not sure.
+          That's the dependency curve nobody graphs on the same chart as "lines shipped per week."</p>
+
+        <p>tl;dr: treat your context budget like part of operational readiness. Fun experiments are fine. Draining the
+          tank on a Friday lark before you might need the tank is shooting yourself in the Claude. I did it so you can
+          picture it clearly. Don't save your leftover context for a rainy day in the cute sense. Save it for the rainy
+          day in the pager sense.</p>

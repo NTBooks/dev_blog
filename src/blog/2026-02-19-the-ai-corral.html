@@ -1,0 +1,32 @@
+---
+title: "The AI Corral"
+date: 2026-02-19
+description: "How to run Google's Antigravity code editor in a Hyper-V VM on Windows so it can't cause havoc. Plus fine-grained git tokens and snapshots."
+hero: the-ai-corral-hero.jpg
+thumb: the-ai-corral-thumb.jpg
+permalink: /blog/2026-02-19-the-ai-corral.html
+---
+<p>I've been trying out all the IDEs lately. Cursor, Claude, and the chat-based ones like the plain ChatGPT site
+          and TypingMind. Recently I saw Google handing out pretty generous trials for Google One so you can try
+          Antigravity, their code editor.</p>
+
+        <p>I've used Antigravity before and I know how fast and loose it can play with tools. I decided it really needed
+          to be penned up.</p>
+
+        <p>Here's the gist of how to do that on Windows. You can do something similar with Proxmox, Linux, or whatever
+          you prefer.</p>
+
+        <section aria-labelledby="setup">
+          <h2 id="setup">Set up the VM</h2>
+          <p>Install the Hyper-V feature if you don't have it already. Then create a new VM and run Linux Mint Cinnamon
+            on it. Ubuntu works too if that's your thing.</p>
+          <p>Inside the VM, install Antigravity and set up git. When you give this machine git access, use fine-grained
+            tokens. Restrict them so the token can only write to certain repos or branches. You don't want this thing
+            getting out and causing all kinds of havoc.</p>
+        </section>
+
+        <section aria-labelledby="safety">
+          <h2 id="safety">When it goes sideways</h2>
+          <p>If the assistant goes a little crazy inside the machine and deletes all your files, it's no big deal. You
+            have been keeping snapshots, right? Keep snapshots.</p>
+        </section>

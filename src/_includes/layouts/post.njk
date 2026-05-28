@@ -1,0 +1,21 @@
+---
+layout: layouts/base.njk
+ogType: article
+---
+<article itemscope itemtype="https://schema.org/BlogPosting">
+  <header class="article-header">
+    <nav aria-label="Breadcrumb">
+      <a href="/blog/" class="back-link">&larr; Blog</a>
+    </nav>
+    <h1 class="article-title" itemprop="headline">{{ title }}</h1>
+    <time class="article-date" datetime="{{ date | isoDate }}" itemprop="datePublished">{{ date | isoDate }}</time>
+  </header>
+
+  <div class="article-body">
+    {% if hero %}
+    <img src="/blog/images/{{ hero }}" alt="{{ title }} | {{ site.title }}" class="article-hero" width="600" height="auto">
+    {% endif %}
+
+    {{ content | safe }}
+  </div>
+</article>

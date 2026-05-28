@@ -1,0 +1,67 @@
+---
+title: "The Imperfect Model Paradox"
+date: 2026-05-22
+description: "AI prompting follows Zeno's Dichotomy Paradox: the more you shape a result, the tighter and more complicated it gets, but it never quite arrives. Proposing the Imperfect Model Paradox."
+hero: the-imperfect-model-paradox-hero.jpg
+thumb: the-imperfect-model-paradox-thumb.jpg
+permalink: /blog/2026-05-22-the-imperfect-model-paradox.html
+---
+<p>I've been thinking about Zeno's Dichotomy Paradox lately, mostly because I keep living it every time I sit down to prompt something into shape.</p>
+
+        <p>You know the one. To get from point A to point B, you first have to cross half the distance. Then half of what remains. Then half again. Mathematically you get infinitely close, but the whole point of the paradox is that you never technically arrive. You just keep halving the gap forever.</p>
+
+        <p>That's prompting. That's agents. That's the whole deal.</p>
+
+        <h2>The halving problem</h2>
+
+        <p>Every time you refine a prompt, you get closer to what you want. The first pass is rough. The second pass is better. By the fifth pass, you're in the neighborhood. But somewhere around iteration eight or nine, something shifts. You're no longer making big corrections. You're nudging. You're rewording the same instruction three different ways because the model keeps interpreting it slightly wrong. You're adding edge cases and exceptions and "but not like that" clauses.</p>
+
+        <p>Each refinement halves the remaining distance to your ideal output. But it also doubles the complexity of what you're asking for. The prompt gets longer, more brittle, more tightly wound. You're spending more effort for less gain. Classic diminishing returns, except with a twist: the thing you're aiming at doesn't fully exist in the model's training data. It can't. Your specific vision, your exact use case, your particular combination of requirements was never in the corpus.</p>
+
+        <p>The model is interpolating. It's guessing at the shape of your idea based on the shadows of similar ideas it's seen before. And interpolation gets you close. It does not get you there.</p>
+
+        <h2>Why the loop never terminates</h2>
+
+        <p>This is the part that matters for agents. People talk about autonomous repair loops, continuous improvement cycles, agents that monitor their own output and self-correct indefinitely. Set it and forget it. Let the agent converge on perfection.</p>
+
+        <p>It won't. It can't.</p>
+
+        <p>Every correction the agent makes is another halving. Every fix introduces new surface area for new problems. The system gets more complex, the interactions multiply, the edge cases breed. You're not converging on a stable point. You're oscillating around one, and the oscillations have maintenance costs.</p>
+
+        <p>Think about it like this: if I ask an agent to improve a codebase in a loop, it will keep finding things to change. Not because the code is bad, but because the model's idea of "better" shifts with every pass. It's chasing a moving target that it's also moving. The repair loop doesn't converge. It just gets expensive.</p>
+
+        <h2>The maintenance tax</h2>
+
+        <p>Every layer of prompting and agent refinement adds maintenance cost. The tighter you wind the instructions, the more fragile the system becomes. A prompt that's been refined twelve times is twelve times more likely to break when the model updates, when the context shifts, when a single variable in the input changes slightly.</p>
+
+        <p>This is the real cost nobody talks about. Getting to 80% is cheap. Getting to 90% costs twice as much. Getting to 95% costs twice as much again. And 100%? You're not getting to 100%. The model doesn't have your exact idea in its weights. It has approximations of related ideas, and it's blending them on the fly.</p>
+
+        <p>You're paying exponentially increasing maintenance costs to asymptotically approach something that doesn't exist in the system.</p>
+
+        <h2>The B+ threshold</h2>
+
+        <p>Here's the practical reality. If you're a B+ kind of person, if 90% accuracy is genuinely good enough for your use case, AI tools are incredible. You can get there fast, cheap, and reliably. The first few halvings cover enormous ground. You go from nothing to mostly-right in minutes.</p>
+
+        <p>But if you need the A+, if you need the thing to be exactly right, you're going to spend more time on the last 10% than you did on the first 90%. And some of that last 10% simply isn't reachable through prompting alone, because the model is reconstructing your intent from statistical patterns, not understanding it.</p>
+
+        <p>This is fine. It's not a failure of the tools. It's a property of the tools. You just need to know where the wall is before you run into it.</p>
+
+        <h2>The Imperfect Model Paradox</h2>
+
+        <p>So I want to name this thing, because I think it deserves a name.</p>
+
+        <p><strong>The Imperfect Model Paradox:</strong> An AI system can approach but never fully reach an ideal solution, because the ideal exists only in the requester's intent, which is not and cannot be completely represented in the model's training data. Each successive refinement reduces the gap by a smaller margin while increasing system complexity, making the cost of convergence infinite while perfect convergence remains impossible.</p>
+
+        <p>Put differently: you can't prompt your way to something the model has never seen, and your exact idea is always something the model has never seen. The model can interpolate. It can get adjacent. It can surprise you with how close it gets. But there's always a residual gap between the statistical approximation and the thing in your head, and that gap has a non-zero floor.</p>
+
+        <p>This isn't Zeno's paradox exactly, because Zeno's version at least implies you'll get infinitely close. The Imperfect Model Paradox is worse: the floor isn't zero. There's a hard limit on how close you can get, determined by the gap between your intent and the model's training distribution. You don't just asymptotically approach perfection. You asymptotically approach a point that is itself imperfect.</p>
+
+        <h2>What this means in practice</h2>
+
+        <p>Don't run your agents in an infinite improvement loop. They won't converge. They'll oscillate and accrue complexity until something breaks.</p>
+
+        <p>Don't spend three hours refining a prompt to get from 92% to 94%. Spend ten minutes getting to 90% and then do the last bit by hand. The hand part is where your actual expertise lives anyway.</p>
+
+        <p>Don't trust anyone who tells you the agent will "figure it out if you just let it run long enough." It won't. It'll get you close, and then it'll start rearranging furniture. You're looking for a one-off result, not a perpetual motion machine.</p>
+
+        <p>tl;dr: AI prompting follows Zeno's paradox but with a worse punchline. You keep halving the distance but you're not even halving toward the right point. Get to 90%, do the rest yourself, and don't let agents run in circles pretending they're converging.</p>

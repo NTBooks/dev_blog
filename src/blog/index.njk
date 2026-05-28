@@ -1,0 +1,37 @@
+---
+layout: layouts/base.njk
+title: Blog
+description: "Blog — LUMP Depot. The abyss staring back; what the LLMs think of me."
+permalink: /blog/index.html
+---
+<a href="/" class="back-link">← Home</a>
+
+<header class="blog-header">
+  <h1 class="page-title" id="blog-heading">Blog</h1>
+</header>
+
+{%- for group in collections.posts | yearGroup %}
+<section aria-labelledby="year-{{ group.year }}">
+  <h2 class="section-title" id="year-{{ group.year }}">{{ group.year }}</h2>
+  <ol class="post-list" reversed>
+    {%- for post in group.posts %}
+    <li>
+      <article class="post-card">
+        <a href="{{ post.url }}" class="post-card-link">
+        {% if post.data.thumb %}
+        <img class="post-thumb" src="/blog/images/{{ post.data.thumb }}" alt="{{ post.data.title }}" width="200" height="200">
+        {% endif %}
+        <div class="post-card-body">
+          <header>
+            <time datetime="{{ post.data.date | isoDate }}">{{ post.data.date | isoDate }}</time>
+            <h3 class="post-title">{{ post.data.title }}</h3>
+          </header>
+          <p class="post-excerpt">{{ post.data.description }}</p>
+        </div>
+        </a>
+      </article>
+    </li>
+    {%- endfor %}
+  </ol>
+</section>
+{%- endfor %}
