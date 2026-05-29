@@ -1,0 +1,49 @@
+---
+title: "The Little Man in the Vending Machine"
+date: 2026-05-29
+description: "The best use for an LLM in production is the fuzzy stuff at the edges, not the crunchy work in the middle. It's the mold on the toast, not the toast."
+hero: the-little-man-in-the-vending-machine-hero.jpg
+thumb: the-little-man-in-the-vending-machine-thumb.jpg
+permalink: /blog/2026-05-29-the-little-man-in-the-vending-machine.html
+---
+<p>I drew a diagram today to settle an argument I keep having with myself, and with about half the people building software right now.</p>
+
+<img src="/blog/images/the-little-man-in-the-vending-machine-pipeline.png" alt="A hand-drawn pipeline. A human and a machine feed into a fuzzy interpretation step, then a chain of solid pipeline steps, then a production output, then a final fuzzy polishing step, ending in polished output. A side branch shows an image/OCR/random file going through its own fuzzy step into a subprocessor." width="600" height="auto">
+
+<p>Most of the boxes are crunchy. Hard edges, predictable, the same input gives you the same output every time. Those are your pipeline steps, your real automation, the rock-solid stuff that has been boring and reliable for fifty years. The squiggly bits are the only places an LLM lives. They sit at the edges where things are messy, and nowhere else.</p>
+
+<h2>Fuzzy, not crunchy</h2>
+
+<p>Here's the gist of how I think about it now. Use an LLM when you need something fuzzy. Don't use it when you need something crunchy.</p>
+
+<p>Fuzzy is interpretation. Somebody hands you a PDF, a photo of a receipt, a forwarded email chain with three different date formats and a typo in the total. A human could figure out what they meant. A regex cannot, not without you writing a thousand of them. That is the job. Read the mess, decide what it actually says, and hand back a clean little structured thing your pipeline can chew on.</p>
+
+<p>Crunchy is everything after that. Adding the numbers. Validating the schema. Writing the row to the database. Calculating tax. None of that should ever touch a model. It's deterministic, it has a correct answer, and you already know how to make a computer get it right every time without burning a single token.</p>
+
+<p>It's the mold on the toast, not the toast.</p>
+
+<h2>This saves tokens and buys precision</h2>
+
+<p>People miss that this is the cheap option, not the expensive one. If you only call the model at the boundary, to turn chaos into an ingredient, you make one small call and then everything downstream is free and exact. If you let the model do the math too, you pay tokens for arithmetic and you get arithmetic that's right most of the time. Most of the time is a terrible spec for a number.</p>
+
+<p>So let it interpret. Whatever crazy thing your customer sends you, point the fuzzy step at it and let it figure out what they meant, then turn that into a clean input for the real pipeline. And on the other end, if you need to format the result in a way a human actually wants to read, go for it, that's a fuzzy job too. But the part in the middle, the data, do it with traditional automation that doesn't have moods.</p>
+
+<h2>The little man in the vending machine</h2>
+
+<p>The idea that AI should do everything is like hiding a little man inside the vending machine.</p>
+
+<p>Think about what that's like for him. He's cold in there. Most of the time he has nothing to do, because somebody pressed B4 and the spiral just needs to turn, which is a job a spring already does perfectly. And every so often, because he's a person crammed in a metal box, he fumbles and drops the wrong bag of chips.</p>
+
+<p>You built a machine that's worse and more expensive than the machine you already had, and you put a guy in it.</p>
+
+<p>The little man does not belong in the machine. He belongs outside it, where he's good. He can stand next to it and recommend flavors. He can ask the customer how they enjoyed their snack. He can help make an ad for the machine. That's the fuzzy, human-shaped work, and he's great at it. Inside the coil mechanism he's just a liability with a heartbeat.</p>
+
+<h2>Mechanical Turk 2.0</h2>
+
+<p>We've been here before. The original Mechanical Turk was a chess-playing automaton that toured Europe wowing crowds, except there was a person hidden inside moving the pieces. The trick was making people believe the machine was doing the thinking.</p>
+
+<p>A lot of what's getting shipped right now is Mechanical Turk 2.0, straight off the floor of the new Silicon Valley world's fair. A confident demo, a curtain, and a model sweating away inside doing work that a plain function should be doing. It looks like magic until you ask it to add the same two numbers twice.</p>
+
+<p>I'm tired of pretending it's not.</p>
+
+<p>tl;dr: Put the model at the edges, where the input is messy and the output needs a human touch. Let it interpret and let it phrase. Do the actual data with crunchy, deterministic automation. Keep the little man out of the vending machine. He's better at recommending flavors anyway.</p>
