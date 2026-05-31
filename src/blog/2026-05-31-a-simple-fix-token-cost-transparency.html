@@ -1,0 +1,37 @@
+---
+title: "A Simple Fix, Token Cost Transparency"
+date: 2026-05-31
+description: "Every tool buries your token spend behind a settings page. If every token also showed the API price it would have cost, you could finally compare. It's just unit pricing for a can of beans."
+hero: a-simple-fix-token-cost-transparency-hero.jpg
+thumb: a-simple-fix-token-cost-transparency-thumb.jpg
+permalink: /blog/2026-05-31-a-simple-fix-token-cost-transparency.html
+---
+<p>I went looking for how many tokens I burned today and, like always, it turned into a scavenger hunt. Click the avatar, find the menu, open settings, scroll past the billing tab, squint at a usage page that loads a chart from last week. By the time I find the number I've forgotten why I wanted it.</p>
+
+<p>Every LLM and every tool does this. They bury what you're spending behind a profile page and a couple of clicks, and they show it to you in whatever unit is least useful at the moment.</p>
+
+<h2>Everyone shows you the wrong number</h2>
+
+<p>Claude will happily tell you tokens per second, or some fragmented per-message amount that means nothing on its own. Cursor shows you a total, which is honest but about as actionable as a gas gauge with no needle. None of them make it easy to see what your usage actually adds up to on the subscription plan you're paying for.</p>
+
+<p>And we all know why. You're spending a lot of their money, the plans are subsidized right now, and the last thing they want is for you to watch the meter spin. A clear running cost would make people think twice, and thinking twice is bad for engagement.</p>
+
+<p>So the number exists. It's just kept in the basement.</p>
+
+<h2>The fix is boring and that's the point</h2>
+
+<p>Here's the whole idea: any time a tool shows you token usage, it also has to show the API cost that would have been charged for those same tokens at list price.</p>
+
+<p>That's it. Not the discounted plan price, not some blended marketing figure. The plain pay-as-you-go API rate, sitting right next to the token count. You spent 1.2M tokens on that refactor? Fine, also tell me that's $14 at the metered rate. Now I can actually compare one request to another and decide if it was worth it.</p>
+
+<p>It doesn't change what you pay. Your $20 plan is still $20. It just turns the token number into something a human can reason about.</p>
+
+<h2>It's a can of beans</h2>
+
+<p>This is unit pricing. The same rule that makes the grocery store put a little tag under the can telling you it's 12 cents an ounce, so you can compare the big can to the small can without doing mental math in aisle six.</p>
+
+<p>Nobody thinks unit pricing is some radical consumer-rights overreach. It's a sticker. It exists because comparing prices used to be deliberately annoying, and somebody decided it shouldn't be. Token spend is in exactly that pre-sticker era right now. Different units, hidden pages, no easy way to line two things up next to each other.</p>
+
+<p>Make the labs print the per-request API cost wherever they already show tokens. It seems like a pretty easy, common-sense bit of regulation, the kind that's hard to argue against once it's on the table. You're not capping anything or breaking anyone's business model. You're just putting the price tag back on the shelf.</p>
+
+<p>tl;dr: every tool hides your real token cost because seeing it would slow you down. Force them to show the list-price API cost next to the token count. It's unit pricing for the can of beans, and it should be just as unremarkable.</p>
