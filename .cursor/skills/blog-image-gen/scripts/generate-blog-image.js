@@ -1,12 +1,25 @@
 #!/usr/bin/env node
 /**
- * Generate a hero image for a blog post using the Gemini API.
+ * Generate a hero image (and a LinkedIn-article-sized image) for a blog post
+ * using the Gemini API.
+ *
+ * Built for the Eleventy structure of this site:
+ *   - Posts live in src/blog/ as YAML-frontmatter + HTML body (no <title> tag).
+ *   - Images live in src/blog/images/.
+ *   - The hero is wired in via the `hero:` frontmatter field (the post layout
+ *     renders the <img> and og:image/twitter:image automatically).
+ *
+ * The LinkedIn image is a standalone landscape asset (16:9) for uploading as a
+ * LinkedIn article cover; it is not referenced by the layout.
+ *
  * Brand aesthetic is loaded from .cursor/skills/brand-guidelines/brand-prompt.md.
  * Uses GEMINI_KEY (and optional SITE_URL) from .env in project root.
  * No npm dependencies (Node 18+ with fetch).
  *
- * Usage: node generate-blog-image.js blog/YYYY-MM-DD-slug.html [--regenerate] [--seed-image path] [--brief "art direction"]
- * If --seed-image is omitted, script looks for logo.jpg in project root.
+ * Usage:
+ *   node generate-blog-image.js src/blog/YYYY-MM-DD-slug.html [--regenerate] [--seed-image path] [--brief "art direction"] [--no-linkedin]
+ * The post path may also be given as just the filename or a blog/ path; it is
+ * resolved against src/blog/.
  */
 
 const fs = require("fs");
@@ -14,6 +27,8 @@ const path = require("path");
 
 const MODEL = "gemini-3-pro-image-preview";
 const BRAND_PROMPT_PATH = ".cursor/skills/brand-guidelines/brand-prompt.md";
+const BLOG_DIR = path.join("src", "blog");
+const IMAGES_DIR = path.join("src", "blog", "images");
 
 function loadBrandPrompt(projectRoot) {
   const promptPath = path.join(projectRoot, BRAND_PROMPT_PATH);
@@ -27,6 +42,10 @@ function loadBrandPrompt(projectRoot) {
 
 function buildHeroPrompt(brandPrompt) {
   return `Generate a black background image for this post using this aesthetic:\n\n${brandPrompt}\n\nIt can include LUMP Depot branding but not the logo or tagline. Simple infographics are preferred. We want these headers to do well on linkedin. \n\n---\n\nPost to illustrate:`;
+}
+
+function buildLinkedInPrompt(brandPrompt) {
+  return `Generate a WIDE LANDSCAPE 16:9 cover image (1920x1080 proportions) for a LinkedIn article using this aesthetic:\n\n${brandPrompt}\n\nComposition notes:\n1. Strong horizontal 16:9 layout with the main subject centered and readable when cropped to 1.91:1.\n2. You may render the post title as a bold, faceted crystalline headline. CRITICAL: spell every word correctly, matching the title exactly.\n3. It can include LUMP Depot branding but not the logo or tagline. Simple infographics preferred. Black background.\n\n---\n\nPost to illustrate:`;
 }
 
 function loadEnv(projectRoot) {
@@ -48,52 +67,56 @@ function loadEnv(projectRoot) {
   return env;
 }
 
+function resolvePostPath(projectRoot, postPath) {
+  const candidates = [];
+  if (path.isAbsolute(postPath)) {
+    candidates.push(postPath);
+  } else {
+    candidates.push(path.join(projectRoot, postPath));
+    const base = path.basename(postPath);
+    candidates.push(path.join(projectRoot, BLOG_DIR, base));
+  }
+  for (const c of candidates) {
+    if (fs.existsSync(c)) return c;
+  }
+  return candidates[0];
+}
+
 function slugFromPostPath(postPath) {
   const base = path.basename(postPath, ".html");
   const match = base.match(/^\d{4}-\d{2}-\d{2}-(.+)$/);
   return match ? match[1] : base;
 }
 
-function hasExistingImage(html) {
-  if (/property="og:image"\s+content=/i.test(html)) return true;
-  if (/class="article-body"[^>]*>\s*<img/i.test(html)) return true;
-  return false;
+function splitFrontmatter(raw) {
+  const m = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
+  if (!m) return { frontmatter: "", body: raw, hasFrontmatter: false };
+  return { frontmatter: m[1], body: m[2], hasFrontmatter: true };
 }
 
-function extractTitle(html) {
-  const m = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+function getFrontmatterValue(frontmatter, key) {
+  const re = new RegExp(`^${key}\\s*:\\s*(.+)$`, "im");
+  const m = frontmatter.match(re);
   if (!m) return "";
-  let title = m[1].trim();
-  const sep = title.lastIndexOf(" \u2014 ");
-  if (sep > 0) title = title.slice(0, sep).trim();
-  return title;
+  let v = m[1].trim();
+  if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'")))
+    v = v.slice(1, -1);
+  return v;
 }
 
-function extractSiteUrl(html, envUrl) {
-  if (envUrl) return envUrl;
-  const m = html.match(/<meta\s+property="og:url"\s+content="([^"]*)"/i);
-  if (m) {
-    try {
-      const url = new URL(m[1]);
-      return url.origin;
-    } catch { /* fall through */ }
-  }
-  return "";
+function setFrontmatterValue(frontmatter, key, value) {
+  const re = new RegExp(`^${key}\\s*:.*$`, "im");
+  const line = `${key}: ${value}`;
+  if (re.test(frontmatter)) return frontmatter.replace(re, line);
+  return `${frontmatter.replace(/\s*$/, "")}\n${line}`;
 }
 
-function extractDescription(html) {
-  const m = html.match(/<meta\s+name="description"\s+content="([^"]*)"/i) ||
-    html.match(/<meta\s+property="og:description"\s+content="([^"]*)"/i);
-  return m ? m[1].trim() : "";
+function rebuild(frontmatter, body) {
+  return `---\n${frontmatter}\n---\n${body}`;
 }
 
-function extractBodyText(html) {
-  const start = html.indexOf('<div class="article-body">');
-  if (start === -1) return "";
-  const end = html.indexOf("</div>", start);
-  if (end === -1) return "";
-  const block = html.slice(start, end);
-  return block.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 2000);
+function bodyToText(body, limit) {
+  return body.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, limit);
 }
 
 function getSeedImagePart(projectRoot, seedPath) {
@@ -136,52 +159,24 @@ async function generateImage(apiKey, prompt, seedPart) {
   throw new Error("No image in Gemini response");
 }
 
-function insertImageIntoHtml(html, slug, title, siteUrl) {
-  const imageUrl = `${siteUrl}/blog/images/${slug}-hero.png`;
-  const imgTag = `<img src="images/${slug}-hero.png" alt="${title.replace(/"/g, "&quot;")}" class="article-hero" width="600" height="auto">`;
-
-  let out = html;
-
-  if (!/property="og:image"/.test(out)) {
-    out = out.replace(
-      /(<meta\s+property="og:url"[^>]*>)/i,
-      `$1\n  <meta property="og:image" content="${imageUrl}">`
-    );
-  }
-  if (!/name="twitter:image"/.test(out)) {
-    out = out.replace(
-      /(<meta\s+name="twitter:title"[^>]*>)/i,
-      `$1\n  <meta name="twitter:image" content="${imageUrl}">`
-    );
-  }
-  out = out.replace(/<meta\s+name="twitter:card"\s+content="summary"\s*>/i, '<meta name="twitter:card" content="summary_large_image">');
-
-  if (!/<div class="article-body">\s*<img/.test(out)) {
-    out = out.replace(
-      /<div class="article-body">\s*/,
-      `<div class="article-body">\n        ${imgTag}\n\n        `
-    );
-  }
-
-  return out;
-}
-
 async function main() {
   const args = process.argv.slice(2);
   let postPath = null;
   let regenerate = false;
   let seedPath = null;
   let imageBrief = "";
+  let withLinkedIn = true;
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
     if (a === "--regenerate") regenerate = true;
+    else if (a === "--no-linkedin") withLinkedIn = false;
     else if (a === "--seed-image") seedPath = args[++i] || null;
     else if (a === "--brief") imageBrief = args[++i] || "";
     else if (!a.startsWith("--")) postPath = postPath || a;
   }
 
   if (!postPath) {
-    console.error("Usage: node generate-blog-image.js blog/YYYY-MM-DD-slug.html [--regenerate]");
+    console.error("Usage: node generate-blog-image.js src/blog/YYYY-MM-DD-slug.html [--regenerate] [--no-linkedin] [--seed-image path] [--brief \"art direction\"]");
     process.exit(1);
   }
 
@@ -193,45 +188,62 @@ async function main() {
     process.exit(1);
   }
 
-  const absolutePath = path.isAbsolute(postPath) ? postPath : path.join(projectRoot, postPath);
+  const absolutePath = resolvePostPath(projectRoot, postPath);
   if (!fs.existsSync(absolutePath)) {
     console.error("Post file not found:", absolutePath);
     process.exit(1);
   }
 
-  let html = fs.readFileSync(absolutePath, "utf8");
-  if (hasExistingImage(html) && !regenerate) {
-    console.log("Post already has an image; skipping. Use --regenerate to replace.");
+  const raw = fs.readFileSync(absolutePath, "utf8");
+  const { frontmatter, body, hasFrontmatter } = splitFrontmatter(raw);
+  if (!hasFrontmatter) {
+    console.error("Post has no YAML frontmatter; expected an Eleventy post in src/blog/.");
+    process.exit(1);
+  }
+
+  const slug = slugFromPostPath(absolutePath);
+  const existingHero = getFrontmatterValue(frontmatter, "hero");
+  if (existingHero && !regenerate) {
+    console.log("Post already has a hero image; skipping. Use --regenerate to replace.");
     process.exit(0);
   }
 
   const brandPrompt = loadBrandPrompt(projectRoot);
-  const heroPrompt = buildHeroPrompt(brandPrompt);
-  const siteUrl = extractSiteUrl(html, env.SITE_URL || "");
-
-  const slug = slugFromPostPath(postPath);
-  const title = extractTitle(html);
-  const description = extractDescription(html);
-  const bodyText = extractBodyText(html);
+  const title = getFrontmatterValue(frontmatter, "title");
+  const description = getFrontmatterValue(frontmatter, "description");
+  const bodyText = bodyToText(body, 2000);
   const briefBlock = imageBrief
     ? `\n\nArt direction (prioritize this for the composition):\n${imageBrief}`
     : "";
-  const fullPrompt = `${heroPrompt}\n\nTitle: ${title}\nDescription: ${description}\n\nContent (excerpt):\n${bodyText}${briefBlock}`;
+  const postBlock = `\n\nTitle: ${title}\nDescription: ${description}\n\nContent (excerpt):\n${bodyText}${briefBlock}`;
+
+  const imagesDir = path.join(projectRoot, IMAGES_DIR);
+  if (!fs.existsSync(imagesDir)) fs.mkdirSync(imagesDir, { recursive: true });
 
   const seedPart = getSeedImagePart(projectRoot, seedPath);
   if (seedPart) console.log("Using seed image for style reference.");
-  console.log("Generating image for:", title);
-  const imageBuffer = await generateImage(apiKey, fullPrompt, seedPart);
 
-  const imagesDir = path.join(projectRoot, "blog", "images");
-  if (!fs.existsSync(imagesDir)) fs.mkdirSync(imagesDir, { recursive: true });
-  const imagePath = path.join(imagesDir, `${slug}-hero.png`);
-  fs.writeFileSync(imagePath, imageBuffer);
-  console.log("Saved:", imagePath);
+  // Hero
+  console.log("Generating hero image for:", title);
+  const heroBuffer = await generateImage(apiKey, buildHeroPrompt(brandPrompt) + postBlock, seedPart);
+  const heroPath = path.join(imagesDir, `${slug}-hero.png`);
+  fs.writeFileSync(heroPath, heroBuffer);
+  console.log("Saved:", path.join(IMAGES_DIR, `${slug}-hero.png`));
 
-  html = insertImageIntoHtml(html, slug, title, siteUrl);
-  fs.writeFileSync(absolutePath, html);
-  console.log("Updated post HTML with hero image and og:image / twitter:image.");
+  // LinkedIn article cover (standalone asset)
+  if (withLinkedIn) {
+    console.log("Generating LinkedIn article image for:", title);
+    const liBuffer = await generateImage(apiKey, buildLinkedInPrompt(brandPrompt) + postBlock, seedPart);
+    const liPath = path.join(imagesDir, `${slug}-linkedin.png`);
+    fs.writeFileSync(liPath, liBuffer);
+    console.log("Saved:", path.join(IMAGES_DIR, `${slug}-linkedin.png`));
+  }
+
+  // Wire the hero into frontmatter (compress step rewrites .png -> .jpg).
+  let fm = setFrontmatterValue(frontmatter, "hero", `${slug}-hero.png`);
+  fs.writeFileSync(absolutePath, rebuild(fm, body));
+  console.log("Updated post frontmatter with hero:", `${slug}-hero.png`);
+  console.log("Next: run compress-blog-images.js to convert PNG -> JPG and size for embeds.");
 }
 
 main().catch((err) => {

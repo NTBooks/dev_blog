@@ -7,7 +7,7 @@ description: Generates 200x200 thumbnail images for blog posts using the Gemini 
 
 Generate **new** 200×200 thumbnail images for each blog post using the **Gemini API**. Thumbnails are **intelligently generated** to fit the constraints: brand aesthetic on black, **no text**, square, representing the post theme visually only (symbol or abstract shape). They are not resized hero images.
 
-**Image pipeline:** Both hero images (blog-image-gen) and thumbnails (this skill) are generated as PNG. Run the **compress script** after generating so the site serves JPGs: heroes at **1200px wide** for sharp embeds (LinkedIn, og:image), thumbs at native size. The compress script updates all HTML references to `.jpg` and removes the original PNGs.
+**Image pipeline:** Hero/LinkedIn images (blog-image-gen) and thumbnails (this skill) are generated as PNG into `src/blog/images/`. Run the **compress script** after generating so the site serves JPGs: heroes at **1200px wide**, LinkedIn covers at **1920x1080**, thumbs cover-cropped to **200x200**. The compress script updates frontmatter references in `src/blog` posts to `.jpg` and removes the original PNGs.
 
 ## When to use
 
@@ -30,6 +30,12 @@ From the project root:
 node .cursor/skills/blog-thumbnails/scripts/generate-thumbnails.js
 ```
 
+To generate a thumbnail for a single post only:
+
+```bash
+node .cursor/skills/blog-thumbnails/scripts/generate-thumbnails.js src/blog/YYYY-MM-DD-slug.html
+```
+
 To regenerate thumbnails for posts that already have one:
 
 ```bash
@@ -45,12 +51,12 @@ node .cursor/skills/blog-thumbnails/scripts/generate-thumbnails.js --seed-image 
 The script will:
 
 1. Load the brand aesthetic from `.cursor/skills/brand-guidelines/brand-prompt.md`.
-2. Find every post file in `blog/` matching `YYYY-MM-DD-slug.html`.
-3. For each post, if `blog/images/<slug>-thumb.png` or `blog/images/<slug>-thumb.jpg` already exists and `--regenerate` was not passed, skip.
-4. Extract title, description, and body excerpt from the post HTML.
+2. Find every post file in `src/blog/` matching `YYYY-MM-DD-slug.html` (or just the one post if a path is passed).
+3. For each post, if it already has a `thumb:` in frontmatter (or a thumb image file) and `--regenerate` was not passed, skip.
+4. Extract title and description (from frontmatter) and a body excerpt from the post.
 5. Call the Gemini API with a **thumbnail-specific prompt**: brand aesthetic, **no text**, square 200×200, represent the post theme with a single symbol or abstract shape.
-6. Save the image as `blog/images/<slug>-thumb.png` (resize to 200×200 with sharp if available).
-7. **Patch `blog/index.html`**: for each post card that has a thumb file, ensure `<img class="post-thumb" ...>` is present.
+6. Save the image as `src/blog/images/<slug>-thumb.png` (resize to 200×200 with sharp if available).
+7. Set `thumb: <slug>-thumb.png` in the post frontmatter. The Eleventy blog listing renders `<img class="post-thumb">` from that field automatically.
 
 ## Constraints (enforced in the prompt)
 
@@ -66,16 +72,16 @@ The script loads design principles from the **brand-guidelines** skill at runtim
 
 | What | Location |
 |------|----------|
-| Thumbnails | `blog/images/<slug>-thumb.png` (200×200 when sharp is used) |
-| Listing | `blog/index.html` updated with `<img class="post-thumb">` inside each card that has a thumb |
+| Thumbnails | `src/blog/images/<slug>-thumb.png` (200×200 when sharp is used) |
+| Wired into post | `thumb:` frontmatter field; the Eleventy blog listing renders `<img class="post-thumb">` |
 
-The script only patches `blog/index.html`. **Home page** (`index.html`): use **hero images** (full post images), not thumbnails—e.g. `src="blog/images/<slug>-hero.jpg"` with `width="400" height="auto"`. **Blog listing** (`blog/index.html`): use **thumbnails** (`<slug>-thumb.jpg`) so the page stays light when displaying many posts.
+The script sets the `thumb:` frontmatter field per post. The Eleventy templates handle display: the **blog listing** (`src/blog/index.njk`) uses the **thumbnail** so the page stays light with many posts, and the **home page** (`src/index.njk`) uses the **hero** for recent posts. No HTML files are patched directly.
 
 ---
 
 ## JPEG compression (ffmpeg)
 
-All blog images in `blog/images/` should be JPEG at 90% quality. Use ffmpeg to convert any non-JPG images (e.g. PNG from hero/thumb generators) to JPEG and update references.
+All blog images in `src/blog/images/` should be JPEG. Use ffmpeg to convert any non-JPG images (e.g. PNG from hero/thumb generators) to JPEG and update references in `src/blog` posts.
 
 **Prerequisite:** ffmpeg on PATH.
 
@@ -87,9 +93,9 @@ node .cursor/skills/blog-thumbnails/scripts/compress-blog-images.js
 
 The script will:
 
-1. Find every file in `blog/images/` that is not already `.jpg` (e.g. `.png`).
-2. Run ffmpeg: hero images are scaled to **1200px wide** (LinkedIn/social previews look sharp at 1200px+); thumbnails keep their size. Quality: `-q:v 2` (best).
-3. Update all HTML (blog posts, blog index, home page) so references point to the `.jpg` file.
+1. Find every file in `src/blog/images/` that is not already `.jpg` (e.g. `.png`).
+2. Run ffmpeg by image kind: `-hero` scaled to **1200px wide**; `-linkedin` cover-cropped to **1920x1080** (LinkedIn article cover); `-thumb` cover-cropped to **200x200**; others kept at native size. Quality: `-q:v 2` (best).
+3. Update references in `src/blog` posts (frontmatter `hero:`/`thumb:`) so they point to the `.jpg` file.
 4. Remove the original non-JPG file.
 
 Run after adding or regenerating hero or thumbnail images so the site serves JPEGs.
@@ -108,6 +114,6 @@ node .cursor/skills/blog-thumbnails/scripts/compress-blog-images.js --fix-hero
 - **Compress script:** `.cursor/skills/blog-thumbnails/scripts/compress-blog-images.js`
 - **Brand prompt:** `.cursor/skills/brand-guidelines/brand-prompt.md`
 - **Env:** `GEMINI_KEY` in project root `.env`
-- **Skip:** Post already has `blog/images/<slug>-thumb.png` or `<slug>-thumb.jpg` → skip unless `--regenerate`.
+- **Skip:** Post already has `thumb:` in frontmatter (or a `<slug>-thumb` image) → skip unless `--regenerate`.
 - **Optional:** `sharp` (npm install) for exact 200×200 resize. **Required for compression:** ffmpeg on PATH.
 - **Pattern:** Generate PNGs (hero + thumbs) → run compress → serve 1200px hero JPGs and thumb JPGs; run compress after any new or regenerated images.

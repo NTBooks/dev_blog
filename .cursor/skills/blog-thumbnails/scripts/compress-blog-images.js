@@ -1,9 +1,17 @@
 #!/usr/bin/env node
 /**
- * Compress all non-JPG images in blog/images/ to JPEG at 90% quality using ffmpeg.
- * Converts each file to .jpg, updates all HTML references, then removes the original.
+ * Compress all non-JPG images in src/blog/images/ to JPEG using ffmpeg.
+ * Converts each file to .jpg, updates references in src/blog posts, then removes
+ * the original.
+ *
+ * Sizing by image kind (suffix before extension):
+ *   -hero      -> scaled to 1200px wide (sharp social/og previews)
+ *   -linkedin  -> cover-cropped to 1920x1080 (LinkedIn article cover, 16:9)
+ *   -thumb     -> cover-cropped to 200x200
+ *   (other)    -> kept at native size
+ *
  * Requires: ffmpeg on PATH.
- * Usage: node compress-blog-images.js
+ * Usage: node compress-blog-images.js [--fix-hero]
  * Run from project root.
  */
 
@@ -11,42 +19,45 @@ const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
 
-const IMAGES_DIR = "blog/images";
+const BLOG_DIR = path.join("src", "blog");
+const IMAGES_DIR = path.join("src", "blog", "images");
 const JPEG_QUALITY = 2; // ffmpeg -q:v 2-31; 2 = best quality
-const OG_IMAGE_MIN_WIDTH = 1200; // LinkedIn/social previews look sharp at 1200px+ wide
+const HERO_WIDTH = 1200; // LinkedIn/social previews look sharp at 1200px+ wide
+const LINKEDIN_W = 1920;
+const LINKEDIN_H = 1080;
+const THUMB_SIZE = 200;
 
 function isJpg(name) {
   return /\.jpe?g$/i.test(name);
 }
 
-function isHeroImage(baseName) {
-  return baseName.endsWith("-hero");
+function scaleFilterFor(baseName) {
+  if (baseName.endsWith("-hero")) return `scale=${HERO_WIDTH}:-2`;
+  if (baseName.endsWith("-linkedin"))
+    return `scale=${LINKEDIN_W}:${LINKEDIN_H}:force_original_aspect_ratio=increase,crop=${LINKEDIN_W}:${LINKEDIN_H}`;
+  if (baseName.endsWith("-thumb"))
+    return `scale=${THUMB_SIZE}:${THUMB_SIZE}:force_original_aspect_ratio=increase,crop=${THUMB_SIZE}:${THUMB_SIZE}`;
+  return "";
 }
 
 function compressToJpeg(projectRoot, inputPath, outputPath, baseName) {
-  const scale = isHeroImage(baseName)
-    ? ` -vf "scale=${OG_IMAGE_MIN_WIDTH}:-2"`
-    : "";
+  const filter = scaleFilterFor(baseName);
+  const scale = filter ? ` -vf ${JSON.stringify(filter)}` : "";
   const cmd = `ffmpeg -i ${JSON.stringify(inputPath)}${scale} -q:v ${JPEG_QUALITY} -qmin ${JPEG_QUALITY} -qmax ${JPEG_QUALITY} -frames:v 1 -y ${JSON.stringify(outputPath)}`;
   execSync(cmd, { stdio: "inherit", cwd: projectRoot });
 }
 
-function updateHtmlReferences(projectRoot, fromBasename, toBasename) {
-  const fromPng = fromBasename; // e.g. "slug-hero.png"
-  const toJpg = toBasename;     // e.g. "slug-hero.jpg"
-  const blogDir = path.resolve(projectRoot, "blog");
-  const files = [
-    path.resolve(projectRoot, "index.html"),
-    path.resolve(blogDir, "index.html"),
-    ...fs.readdirSync(blogDir)
-      .filter((f) => /^\d{4}-\d{2}-\d{2}-.+\.html$/.test(f))
-      .map((f) => path.resolve(blogDir, f)),
-  ];
+function updateReferences(projectRoot, fromBasename, toBasename) {
+  const blogDir = path.resolve(projectRoot, BLOG_DIR);
+  if (!fs.existsSync(blogDir)) return;
+  const files = fs.readdirSync(blogDir)
+    .filter((f) => /^\d{4}-\d{2}-\d{2}-.+\.html$/.test(f))
+    .map((f) => path.resolve(blogDir, f));
   for (const file of files) {
     if (!fs.existsSync(file)) continue;
     let html = fs.readFileSync(file, "utf8");
     const before = html;
-    html = html.split(fromPng).join(toJpg);
+    html = html.split(fromBasename).join(toBasename);
     if (html !== before) fs.writeFileSync(file, html, "utf8");
   }
 }
@@ -71,7 +82,7 @@ function main() {
   const projectRoot = path.resolve(process.cwd());
   const imagesPath = path.resolve(projectRoot, IMAGES_DIR);
   if (!fs.existsSync(imagesPath)) {
-    console.log("No blog/images directory.");
+    console.log("No src/blog/images directory.");
     return;
   }
   if (fixHero) {
@@ -82,7 +93,7 @@ function main() {
   const files = fs.readdirSync(imagesPath);
   const nonJpg = files.filter((f) => !isJpg(f));
   if (nonJpg.length === 0) {
-    console.log("No non-JPG images in blog/images.");
+    console.log("No non-JPG images in src/blog/images.");
     return;
   }
   for (const file of nonJpg) {
@@ -92,7 +103,7 @@ function main() {
     if (!fs.existsSync(inputPath)) continue;
     console.log("Compressing:", file);
     compressToJpeg(projectRoot, inputPath, outputPath, base);
-    updateHtmlReferences(projectRoot, file, `${base}.jpg`);
+    updateReferences(projectRoot, file, `${base}.jpg`);
     fs.unlinkSync(inputPath);
     console.log("  ->", `${base}.jpg`, "(removed original)");
   }

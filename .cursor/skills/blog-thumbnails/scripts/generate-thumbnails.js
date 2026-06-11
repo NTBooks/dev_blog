@@ -1,13 +1,24 @@
 #!/usr/bin/env node
 /**
  * Generate 200x200 thumbnail images for blog posts using the Gemini API.
- * Brand aesthetic is loaded from .cursor/skills/brand-guidelines/brand-prompt.md.
+ *
+ * Built for the Eleventy structure of this site:
+ *   - Posts live in src/blog/ as YAML-frontmatter + HTML body.
+ *   - Images live in src/blog/images/.
+ *   - The thumbnail is wired in via the `thumb:` frontmatter field (the blog
+ *     listing renders the <img class="post-thumb"> automatically).
+ *
  * Thumbnails are new images (not resized heroes): NO text, square, representing
  * the post theme visually only.
- * Uses GEMINI_KEY from .env in project root. Optional: sharp to resize output to 200x200.
  *
- * Usage: node generate-thumbnails.js [--regenerate] [--seed-image path]
- * Run from project root.
+ * Brand aesthetic is loaded from .cursor/skills/brand-guidelines/brand-prompt.md.
+ * Uses GEMINI_KEY from .env in project root. Optional: sharp to resize to 200x200
+ * (otherwise the compress step / ffmpeg handles sizing).
+ *
+ * Usage:
+ *   node generate-thumbnails.js [src/blog/YYYY-MM-DD-slug.html] [--regenerate] [--seed-image path]
+ * If a post path is given, only that post gets a thumbnail; otherwise every post
+ * missing one is processed. Run from project root.
  */
 
 const fs = require("fs");
@@ -15,9 +26,8 @@ const path = require("path");
 
 const SIZE = 200;
 const MODEL = "gemini-3-pro-image-preview";
-const BLOG_DIR = "blog";
-const IMAGES_DIR = "blog/images";
-const LISTING_PATH = "blog/index.html";
+const BLOG_DIR = path.join("src", "blog");
+const IMAGES_DIR = path.join("src", "blog", "images");
 const BRAND_PROMPT_PATH = ".cursor/skills/brand-guidelines/brand-prompt.md";
 
 function loadBrandPrompt(projectRoot) {
@@ -59,28 +69,31 @@ function slugFromPostPath(postPath) {
   return match ? match[1] : null;
 }
 
-function extractTitle(html) {
-  const m = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+function splitFrontmatter(raw) {
+  const m = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
+  if (!m) return { frontmatter: "", body: raw, hasFrontmatter: false };
+  return { frontmatter: m[1], body: m[2], hasFrontmatter: true };
+}
+
+function getFrontmatterValue(frontmatter, key) {
+  const re = new RegExp(`^${key}\\s*:\\s*(.+)$`, "im");
+  const m = frontmatter.match(re);
   if (!m) return "";
-  let title = m[1].trim();
-  const sep = title.lastIndexOf(" \u2014 ");
-  if (sep > 0) title = title.slice(0, sep).trim();
-  return title;
+  let v = m[1].trim();
+  if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'")))
+    v = v.slice(1, -1);
+  return v;
 }
 
-function extractDescription(html) {
-  const m = html.match(/<meta\s+name="description"\s+content="([^"]*)"/i) ||
-    html.match(/<meta\s+property="og:description"\s+content="([^"]*)"/i);
-  return m ? m[1].trim() : "";
+function setFrontmatterValue(frontmatter, key, value) {
+  const re = new RegExp(`^${key}\\s*:.*$`, "im");
+  const line = `${key}: ${value}`;
+  if (re.test(frontmatter)) return frontmatter.replace(re, line);
+  return `${frontmatter.replace(/\s*$/, "")}\n${line}`;
 }
 
-function extractBodyText(html) {
-  const start = html.indexOf('<div class="article-body">');
-  if (start === -1) return "";
-  const end = html.indexOf("</div>", start);
-  if (end === -1) return "";
-  const block = html.slice(start, end);
-  return block.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 800);
+function bodyToText(body, limit) {
+  return body.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, limit);
 }
 
 function getSeedImagePart(projectRoot, seedPath) {
@@ -135,36 +148,14 @@ async function resizeTo200(buffer) {
   }
 }
 
-function updateListing(projectRoot, thumbsExist) {
-  const listingPath = path.join(projectRoot, LISTING_PATH);
-  if (!fs.existsSync(listingPath)) return;
-  let html = fs.readFileSync(listingPath, "utf8");
-  const thumbsSet = new Set(thumbsExist);
-
-  const cardBlock = /<article\s+class="post-card">\s*<a\s+href="(\d{4}-\d{2}-\d{2}-([^"]+)\.html)"\s+class="post-card-link">\s*(?:<img[^>]+class="post-thumb"[^>]*>\s*)?<header>[\s\S]*?<time[^>]*>[^<]*<\/time>\s*<h3\s+class="post-title">([^<]*)<\/h3>/g;
-  html = html.replace(cardBlock, (block, _fullHref, slug, title) => {
-    const alt = title.replace(/"/g, "&quot;").trim();
-    if (!thumbsSet.has(slug)) return block;
-    if (/class="post-thumb"/.test(block)) return block;
-    const img = `<img class="post-thumb" src="images/${slug}-thumb.png" alt="${alt}" width="200" height="200">\n            `;
-    return block.replace(
-      /class="post-card-link">\s*<header>/,
-      `class="post-card-link">\n            ${img}<header>`
-    );
-  });
-
-  fs.writeFileSync(listingPath, html, "utf8");
-  console.log("Updated", LISTING_PATH, "with thumbnail images.");
-}
-
 async function main() {
   const args = process.argv.slice(2);
   const regenerate = args.includes("--regenerate");
   const seedIdx = args.indexOf("--seed-image");
   const seedPath = seedIdx >= 0 && args[seedIdx + 1] ? args[seedIdx + 1] : null;
+  const singlePostArg = args.find((a, i) => !a.startsWith("--") && args[i - 1] !== "--seed-image") || null;
 
-  // Resolve project root: script is at .cursor/skills/blog-thumbnails/scripts/ so go up 4 levels
-  const projectRoot = path.resolve(__dirname, "..", "..", "..", "..");
+  const projectRoot = process.cwd();
   const env = loadEnv(projectRoot);
   const apiKey = env.GEMINI_KEY;
   if (!apiKey) {
@@ -174,12 +165,28 @@ async function main() {
 
   const blogPath = path.join(projectRoot, BLOG_DIR);
   if (!fs.existsSync(blogPath)) {
-    console.log("No blog directory.");
+    console.log("No src/blog directory.");
     return;
   }
-  const postFiles = fs.readdirSync(blogPath)
-    .filter((f) => /^\d{4}-\d{2}-\d{2}-.+\.html$/.test(f))
-    .map((f) => path.join(blogPath, f));
+
+  let postFiles;
+  if (singlePostArg) {
+    const base = path.basename(singlePostArg);
+    const resolved = path.isAbsolute(singlePostArg)
+      ? singlePostArg
+      : fs.existsSync(path.join(projectRoot, singlePostArg))
+        ? path.join(projectRoot, singlePostArg)
+        : path.join(blogPath, base);
+    if (!fs.existsSync(resolved)) {
+      console.error("Post file not found:", resolved);
+      process.exit(1);
+    }
+    postFiles = [resolved];
+  } else {
+    postFiles = fs.readdirSync(blogPath)
+      .filter((f) => /^\d{4}-\d{2}-\d{2}-.+\.html$/.test(f))
+      .map((f) => path.join(blogPath, f));
+  }
 
   const imagesPath = path.join(projectRoot, IMAGES_DIR);
   if (!fs.existsSync(imagesPath)) fs.mkdirSync(imagesPath, { recursive: true });
@@ -190,47 +197,44 @@ async function main() {
   const seedPart = getSeedImagePart(projectRoot, seedPath);
   if (seedPart) console.log("Using seed image for style reference.");
 
-  function thumbExists(slug) {
-    const png = path.join(imagesPath, `${slug}-thumb.png`);
-    const jpg = path.join(imagesPath, `${slug}-thumb.jpg`);
-    return fs.existsSync(png) || fs.existsSync(jpg);
+  function thumbFileExists(slug) {
+    return fs.existsSync(path.join(imagesPath, `${slug}-thumb.png`)) ||
+      fs.existsSync(path.join(imagesPath, `${slug}-thumb.jpg`));
   }
 
-  const thumbsCreated = [];
+  let generated = 0;
   for (const postPath of postFiles) {
     const slug = slugFromPostPath(postPath);
     if (!slug) continue;
-    if (thumbExists(slug) && !regenerate) {
-      thumbsCreated.push(slug);
-      continue;
-    }
-    const thumbPath = path.join(imagesPath, `${slug}-thumb.png`);
-    const html = fs.readFileSync(postPath, "utf8");
-    const title = extractTitle(html);
-    const description = extractDescription(html);
-    const bodyText = extractBodyText(html);
+    const raw = fs.readFileSync(postPath, "utf8");
+    const { frontmatter, body, hasFrontmatter } = splitFrontmatter(raw);
+    if (!hasFrontmatter) continue;
+
+    const hasThumb = getFrontmatterValue(frontmatter, "thumb") || thumbFileExists(slug);
+    if (hasThumb && !regenerate) continue;
+
+    const title = getFrontmatterValue(frontmatter, "title");
+    const description = getFrontmatterValue(frontmatter, "description");
+    const bodyText = bodyToText(body, 800);
     const fullPrompt = `${thumbPrompt}\n\nTitle: ${title}\nDescription: ${description}\n\nContent (excerpt):\n${bodyText}`;
 
     console.log("Generating thumb for:", title);
     let buffer = await generateImage(apiKey, fullPrompt, seedPart);
     buffer = await resizeTo200(buffer);
+    const thumbPath = path.join(imagesPath, `${slug}-thumb.png`);
     fs.writeFileSync(thumbPath, buffer);
-    thumbsCreated.push(slug);
     console.log("Saved:", path.join(IMAGES_DIR, `${slug}-thumb.png`));
+
+    const fm = setFrontmatterValue(frontmatter, "thumb", `${slug}-thumb.png`);
+    fs.writeFileSync(postPath, `---\n${fm}\n---\n${body}`);
+    console.log("Updated post frontmatter with thumb:", `${slug}-thumb.png`);
+    generated++;
   }
 
-  if (thumbsCreated.length === 0) {
-    console.log("No thumbnails generated.");
-    return;
-  }
-  const imagesPathForList = path.join(projectRoot, IMAGES_DIR);
-  if (fs.existsSync(imagesPathForList)) {
-    const files = fs.readdirSync(imagesPathForList);
-    const existing = files
-      .filter((f) => f.endsWith("-thumb.png") || f.endsWith("-thumb.jpg"))
-      .map((f) => f.replace(/-thumb\.(png|jpg)$/i, ""));
-    const allSlugs = [...new Set([...thumbsCreated, ...existing])];
-    updateListing(projectRoot, allSlugs);
+  if (generated === 0) {
+    console.log("No thumbnails generated (all posts already have one; use --regenerate to replace).");
+  } else {
+    console.log(`Generated ${generated} thumbnail(s). Next: run compress-blog-images.js to convert PNG -> JPG.`);
   }
 }
 
