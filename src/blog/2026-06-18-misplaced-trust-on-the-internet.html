@@ -1,0 +1,76 @@
+---
+title: "Misplaced Trust on The Internet"
+date: 2026-06-18
+description: "You can buy a thousand GitHub stars for a few bucks. That's the whole problem with trust online: every proof leans on another proof, and a compound liar just stacks fake ones until the pile looks legit."
+permalink: /blog/2026-06-18-misplaced-trust-on-the-internet.html
+hero: misplaced-trust-on-the-internet-hero.jpg
+thumb: misplaced-trust-on-the-internet-thumb.jpg
+---
+<p>You can buy GitHub stars. A few bucks gets you a thousand of them, delivered overnight from a pile of throwaway accounts. I keep coming back to that fact because of what a star is supposed to mean. It's supposed to mean a real developer looked at this repo and thought it was worth keeping. Thousands of stars is supposed to mean thousands of those little votes of confidence.</p>
+
+<p>Except the signal that's meant to say "lots of real people vetted this" can also say "one person had a credit card." And it cascades. A blog post links the starred repo as proof the library is solid. A build pipeline pulls it in because it's "popular." Somebody's threat model says "well, it has 12k stars, it's probably not malware." Each layer trusts the layer below it without ever checking the bottom.</p>
+
+<h2>I drew a diagram about it</h2>
+
+<p>I sketched this out to settle the argument in my own head.</p>
+
+<img src="/blog/images/misplaced-trust-on-the-internet-diagram.jpg" alt="A hand-drawn diagram titled The Problem with Compound Liars, with three horizontal bands labeled Low Trust, Medium Trust, and High Trust. Boxes sit at different heights. The Website says Trust Me Bro sits at low trust. An arrow goes from a box pointing to a security-sounding site that also says Trust Me Bro up to Security Site is Fake. A box for a score based on number of reviews points up to Reviews are Fake. The website uses encryption sits at medium trust pointing to The verifier is fake or insecure. The website puts proof on the blockchain points up to The proof is real but the data was a lie." width="600" height="auto">
+
+<p>The thing the diagram is really about is that trust is recursive. Every proof system leans on some other proof system. A liar can build a compound lie by wrapping a false claim inside layers of verification that all look independent but aren't.</p>
+
+<p>You can walk the ladder:</p>
+
+<ul>
+  <li>"Trust me bro" is the floor. Nobody believes it.</li>
+  <li>"A security site says trust me" is higher, but only if the security site is itself trustworthy. Plenty of them are just a logo and a green checkmark someone bought.</li>
+  <li>"Thousands of reviews say it's good" is higher still, but only if the reviews are real. See also: the stars.</li>
+  <li>"It's on the blockchain" feels highest of all, but only buys you immutability, not honesty.</li>
+</ul>
+
+<h2>A proof proves existence, not truth</h2>
+
+<p>Here's the line I keep wanting to tattoo on people's foreheads. A proof can show that a statement existed, was signed, was recorded, or was never altered. It cannot, by itself, show that the original statement was true.</p>
+
+<p>The blockchain version of this confuses everyone, so it's worth pulling apart. People mix up two completely different things:</p>
+
+<p><strong>Integrity:</strong> this data wasn't modified.</p>
+
+<p><strong>Truth:</strong> this data accurately describes reality.</p>
+
+<p>A blockchain is fantastic at the first one and almost entirely useless for the second, unless you also trust the process that produced the data in the first place. Put a lie on the blockchain and you get a permanent, tamper-proof, beautifully signed lie. The chain did its job perfectly. It just wasn't the job you thought it was.</p>
+
+<h2>It's a graph, not a ladder</h2>
+
+<p>The vertical scale in my diagram is a little white lie I told myself to make it readable. Trust isn't actually a ladder where each rung is strictly higher than the last.</p>
+
+<p>Take "the website uses encryption." That doesn't make the claims on the website more true. It proves secure transport, nothing else. A scam site with a valid HTTPS cert is still a scam site, now with a padlock icon to make you feel better about it.</p>
+
+<p>And the reverse trips people up too. "The verifier is fake or insecure" doesn't automatically make the claim false. It just kills that one verification path. The claim might still check out somewhere else.</p>
+
+<p>So the honest picture isn't a ladder at all. It's a graph of dependencies. Every trust claim has upstream assumptions hanging off it, and every one of those assumptions is its own little door an attacker can try.</p>
+
+<h2>The weakest link is usually the data, not the math</h2>
+
+<p>This is the part that credential systems, review systems, reputation scores, and blockchain projects all keep tripping over. The weak link is almost never the cryptography. It's the data source feeding into it.</p>
+
+<p>Think about a diploma. It can be cryptographically signed. A blockchain can timestamp it. Three different verifiers can confirm the signature is valid. Airtight, end to end.</p>
+
+<p>But if the institution that issued it was a diploma mill running out of a P.O. box, every layer of that stack faithfully preserves a worthless credential. The math is perfect. The input was garbage. That's the ceiling on any proof system, no matter how clever the proof is.</p>
+
+<p>Which brings it back to the stars. The git history is cryptographically perfect. Every commit hashes to the next, the whole chain verifies, nobody tampered with anything. None of that makes the 12,000 stars real. The proof was guarding the wrong door.</p>
+
+<h2>And now we're feeding it to the machine</h2>
+
+<p>Here's the part that actually keeps me up at night. We used to be the ones reading the stars and the reviews and the security badges, and at least a human can get a bad feeling and dig deeper. Now we're training models on all of it.</p>
+
+<p>An LLM learns by reading the internet at a scale no person ever could. It sees the repo with 12,000 bought stars and the blog posts that cite it as a trusted library and the SEO pages that exist only to launder that lie into looking like consensus. It has no way to check the bottom of the stack either. It just sees the pile and learns that the pile is tall.</p>
+
+<p>So the compound lie doesn't stay an opinion you can argue with. It gets baked into the weights as a fact. The model can't un-believe it later, because there's no original source to go back to, just a frozen statistical average of everyone who repeated it. Garbage in, garbage faithfully preserved, exactly like the signed diploma from the fake school.</p>
+
+<p>At that point asking an LLM what to trust is about as reliable as buying the first thing Amazon recommends. It looks authoritative, it's wrapped in the confidence of a system that processed a billion signals, and underneath it's just whatever got promoted the hardest. The recommendation isn't the truth. It's the output of whoever gamed the inputs best.</p>
+
+<h2>So check the bottom of the stack</h2>
+
+<p>The compound liar's whole trick is that we trust the verification chain without examining each dependency in it. We see "signed, recorded, verified, popular" and stop reading. The fix isn't more cryptography. It's the boring, annoying habit of asking where the original claim came from, and whether you'd trust that source if it were standing in front of you with no padlock, no checkmark, and no stars. That habit matters more than ever now that we've handed the reading to machines that can't form a bad feeling.</p>
+
+<p>tl;dr: You can buy GitHub stars, and that's a tidy demo of how trust works online. Every proof leans on another proof, so a compound liar stacks fake ones until the pile looks tall. Proofs are great at integrity (this wasn't changed) and useless at truth (this was true to begin with). It's a dependency graph, not a ladder, and the weakest link is almost always the data source, not the math. And once an LLM trains on all those baked-in lies, trusting its answer is about as smart as buying the first thing Amazon recommends. Check the bottom of the stack.</p>
